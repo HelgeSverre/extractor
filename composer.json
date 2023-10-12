@@ -1,0 +1,101 @@
+{
+    "name": "helgesverre/extractor",
+    "description": "AI-Powered Data Extraction for your Laravel application.",
+    "keywords": [
+        "laravel-package",
+        "data",
+        "extractor",
+        "openai",
+        "ai"
+    ],
+    "homepage": "https://github.com/helgesverre/extractor",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Helge Sverre",
+            "email": "helge.sverre@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "ext-zip": "*",
+        "aws/aws-sdk-php": "^3.281",
+        "illuminate/contracts": "^10.0",
+        "jstewmc/rtf": "^0.5.2",
+        "league/flysystem-aws-s3-v3": "^3.16",
+        "openai-php/laravel": "^0.7.0",
+        "prinsfrank/standards": "^2.1",
+        "smalot/pdfparser": "*",
+        "spatie/laravel-package-tools": "^1.14.0",
+        "symfony/dom-crawler": "^6.3"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "nunomaduro/collision": "^7.8",
+        "orchestra/testbench": "^8.8",
+        "pestphp/pest": "^2.0",
+        "pestphp/pest-plugin-arch": "^2.0",
+        "pestphp/pest-plugin-laravel": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "HelgeSverre\\Extractor\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HelgeSverre\\Extractor\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare",
+            "@composer run prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "start": [
+            "Composer\\Config::disableProcessTimeout",
+            "@composer run build",
+            "@php vendor/bin/testbench serve"
+        ],
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint",
+        "serve": [
+            "@build",
+            "@php vendor/bin/testbench serve"
+        ],
+        "lint": [
+            "@php vendor/bin/pint"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true,
+            "php-http/discovery": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ExtractorServiceProvider"
+            ],
+            "aliases": {
+                "Extractor": "Extractor",
+                "Text": "HelgeSverre\\Extractor\\Facades\\Text"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

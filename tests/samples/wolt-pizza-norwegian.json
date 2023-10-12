@@ -1,0 +1,80 @@
+{
+    "orderRef": "61e4fb2646c424c5cbc9bc88",
+    "date": "2023-07-21",
+    "taxAmount": 74.08,
+    "totalAmount": 568.00,
+    "currency": "NOK",
+    "merchant": {
+        "name": "Minde Pizzeria",
+        "vatId": "921670362MVA",
+        "address": "Conrad Mohrs veg 5, 5068 Bergen, NOR"
+    },
+    "lineItems": [
+        {
+            "text": "Mindes Spesialpizza Stor",
+            "qty": 1,
+            "price": 325.00,
+            "sku": null
+        },
+        {
+            "text": "Mindes Spesialpizza Stor 15%",
+            "qty": 1,
+            "price": 275.00,
+            "sku": null
+        },
+        {
+            "text": "Noe ekstra på din store pizza: Ekstra bacon 15%",
+            "qty": 1,
+            "price": 30.00,
+            "sku": null
+        },
+        {
+            "text": "Ekstra tilbehør: Hvitløksdressing 15%",
+            "qty": 1,
+            "price": 20.00,
+            "sku": null
+        },
+        {
+            "text": "Hamburgermeny",
+            "qty": 1,
+            "price": 185.00,
+            "sku": null
+        },
+        {
+            "text": "Hamburgermeny 15%",
+            "qty": 1,
+            "price": 160.00,
+            "sku": null
+        },
+        {
+            "text": "Velg ønsket størrelse: 160g 15%",
+            "qty": 1,
+            "price": 5.00,
+            "sku": null
+        },
+        {
+            "text": "Velg drikke: Urge 15%",
+            "qty": 1,
+            "price": 0.00,
+            "sku": null
+        },
+        {
+            "text": "Ekstra tilbehør: Bernaisesaus 15%",
+            "qty": 1,
+            "price": 20.00,
+            "sku": null
+        },
+        {
+            "text": "Levering 15%",
+            "qty": 1,
+            "price": 49.00,
+            "sku": null
+        },
+        {
+            "text": "Serviceavgift 15%",
+            "qty": 1,
+            "price": 9.00,
+            "sku": null
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+Kvittering
+Ordredetaljer
+Kunde Helge Sverre Hessevik Liseth
+Bestillings ID 61e4fb2646c424c5cbc9bc88
+Restaurant Minde Pizzeria
+Bestillingstype Levering
+Leveringstid 21.07.2023 20:46
+Betalingsmetode
+Visa: REDACTED 568,00
+
+Vare MVA % Antall Brutto enhetspris Pris
+Mindes Spesialpizza Stor 325,00
+Mindes Spesialpizza Stor 15% 1 275,00 275,00
+Noe ekstra på din store pizza: Ekstra
+bacon 15% 1 30,00 30,00
+Ekstra tilbehør: Hvitløksdressing 15% 1 20,00 20,00
+Hamburgermeny 185,00
+Hamburgermeny 15% 1 160,00 160,00
+Velg ønsket størrelse: 160g 15% 1 5,00 5,00
+Velg drikke: Urge 15% 1 0,00 0,00
+Ekstra tilbehør: Bernaisesaus 15% 1 20,00 20,00
+Levering 15% 1 49,00 49,00
+Serviceavgift 15% 1 9,00 9,00
+Totalt i NOK (inkl. mva) 568,00
+
+Nettopris MVA Totalt
+
+MVA 15% 493,92 74,08 568,00
+
+Informasjon om selger: Minde Maria Mohamed Imad Fahed Hamadeh
+Firma ID: 921670362
+MVA ID: 921670362MVA
+Adresse: Conrad Mohrs veg 5, 5068 Bergen, NOR
+Kvittering levert av Wolt Norway As til Kongens gate 4, 0153 Oslo, NOR med følgende organisasjonsnummer
+920 464 254 på vegne av selgeren.
+Denne kvitteringen er signert digitalt.
