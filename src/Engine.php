@@ -18,7 +18,7 @@ class Engine
 
     public function raw(
         string $prompt,
-        Model $model = Model::TURBO_INSTRUCT,
+        Model $model = Model::TURBO_16K,
         int $maxTokens = 2000,
         float $temperature = 0.1,
     ): array {

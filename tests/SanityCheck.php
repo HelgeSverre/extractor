@@ -17,8 +17,8 @@ use OpenAI\Responses\Completions\CreateResponse as CompletionResponse;
 
 it('validates parsing of receipt data into dto', function () {
 
-    dd(Extractor::extract('contacts',
-        Text::web('https://kvernelandbil.no/forhandlere/bergen-asane/')
+    dd(Extractor::extract('rundown',
+        Text::pdf(file_get_contents(__DIR__ . '/../tests/samples/rundown.pdf'))
     ));
 
     OpenAI::fake([
@@ -29,7 +29,7 @@ it('validates parsing of receipt data into dto', function () {
                     'index' => 0,
                     'message' => [
                         'role' => 'assistant',
-                        'content' => file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.json'),
+                        'content' => file_get_contents(__DIR__ . '/samples/wolt-pizza-norwegian.json'),
                         'function_call' => null,
                     ],
                     'finish_reason' => 'stop',
@@ -38,7 +38,7 @@ it('validates parsing of receipt data into dto', function () {
         ]),
     ]);
 
-    $text = file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.txt');
+    $text = file_get_contents(__DIR__ . '/samples/wolt-pizza-norwegian.txt');
     $result = Extractor::scan($text, model: Model::TURBO);
 
     expect($result)->toBeInstanceOf(Receipt::class)
@@ -51,11 +51,11 @@ it('validates parsing of receipt data into dto', function () {
         ->and($result->merchant->vatId)->toBe('921670362MVA')
         ->and($result->merchant->address)->toBe('Conrad Mohrs veg 5, 5068 Bergen, NOR');
 
-    $expectedResult = json_decode(file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.json'), true);
+    $expectedResult = json_decode(file_get_contents(__DIR__ . '/samples/wolt-pizza-norwegian.json'), true);
 
     foreach ($result->lineItems as $index => $lineItem) {
         expect($lineItem->text)->toBe($expectedResult['lineItems'][$index]['text'], "was '{$lineItem->text}' instead")
-            ->and((float) $lineItem->qty)->toBe((float) $expectedResult['lineItems'][$index]['qty'], "was '{$lineItem->qty}' instead")
+            ->and((float)$lineItem->qty)->toBe((float)$expectedResult['lineItems'][$index]['qty'], "was '{$lineItem->qty}' instead")
             ->and($lineItem->price)->toBe($expectedResult['lineItems'][$index]['price'], "was '{$lineItem->price}' instead")
             ->and($lineItem->sku)->toBe($expectedResult['lineItems'][$index]['sku'], "was '{$lineItem->sku}' instead");
     }
@@ -63,7 +63,7 @@ it('validates parsing of receipt data into dto', function () {
 
 it('confirms real world usability with Turbo Instruct 16K model', function () {
 
-    $text = file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.txt');
+    $text = file_get_contents(__DIR__ . '/samples/wolt-pizza-norwegian.txt');
     $result = Extractor::scan($text, model: Model::TURBO_16K);
 
     expect($result)->toBeInstanceOf(Receipt::class)
@@ -75,11 +75,11 @@ it('confirms real world usability with Turbo Instruct 16K model', function () {
         ->and($result->merchant->name)->toBe('Minde Pizzeria')
         ->and($result->merchant->vatId)->toBe('921670362MVA')
         ->and($result->merchant->address)->toBe('Conrad Mohrs veg 5, 5068 Bergen, NOR');
-    $expectedResult = json_decode(file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.json'), true);
+    $expectedResult = json_decode(file_get_contents(__DIR__ . '/samples/wolt-pizza-norwegian.json'), true);
 
     foreach ($result->lineItems as $index => $lineItem) {
         expect($lineItem->text)->toBe($expectedResult['lineItems'][$index]['text'])
-            ->and((float) $lineItem->qty)->toBe((float) $expectedResult['lineItems'][$index]['qty'])
+            ->and((float)$lineItem->qty)->toBe((float)$expectedResult['lineItems'][$index]['qty'])
             ->and($lineItem->price)->toBe($expectedResult['lineItems'][$index]['price'])
             ->and($lineItem->sku)->toBe($expectedResult['lineItems'][$index]['sku']);
     }
@@ -91,13 +91,13 @@ it('validates returning parsed receipt as array', function () {
             'model' => 'gpt-3.5-turbo',
             'choices' => [
                 [
-                    'text' => file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.json'),
+                    'text' => file_get_contents(__DIR__ . '/samples/wolt-pizza-norwegian.json'),
                 ],
             ],
         ]),
     ]);
 
-    $text = file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.txt');
+    $text = file_get_contents(__DIR__ . '/samples/wolt-pizza-norwegian.txt');
     $result = Extractor::scan($text, model: Model::TURBO_INSTRUCT, asArray: true);
 
     expect($result)->toBeArray()
@@ -113,7 +113,7 @@ it('validates returning parsed receipt as array', function () {
 
 it('confirms real world usability with default model', function () {
 
-    $text = file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.txt');
+    $text = file_get_contents(__DIR__ . '/samples/wolt-pizza-norwegian.txt');
     $result = Extractor::scan($text);
 
     expect($result)->toBeInstanceOf(Receipt::class)
@@ -126,18 +126,18 @@ it('confirms real world usability with default model', function () {
         ->and($result->merchant->vatId)->toBe('921670362MVA')
         ->and($result->merchant->address)->toBe('Conrad Mohrs veg 5, 5068 Bergen, NOR');
 
-    $expectedResult = json_decode(file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.json'), true);
+    $expectedResult = json_decode(file_get_contents(__DIR__ . '/samples/wolt-pizza-norwegian.json'), true);
 
     foreach ($result->lineItems as $index => $lineItem) {
         expect(Str::contains($expectedResult['lineItems'][$index]['text'], $lineItem->text))->toBeTrue()
-            ->and((float) $lineItem->qty)->toBe((float) $expectedResult['lineItems'][$index]['qty'])
+            ->and((float)$lineItem->qty)->toBe((float)$expectedResult['lineItems'][$index]['qty'])
             ->and($lineItem->price)->toBe($expectedResult['lineItems'][$index]['price'])
             ->and($lineItem->sku)->toBe($expectedResult['lineItems'][$index]['sku']);
     }
 });
 
 it('validates ocr functionality with image input', function () {
-    $image = file_get_contents(__DIR__.'/samples/grocery-receipt-norwegian-spar.jpg');
+    $image = file_get_contents(__DIR__ . '/samples/grocery-receipt-norwegian-spar.jpg');
 
     $ocr = resolve(Textract::class);
     $text = $ocr->load($image);
@@ -160,7 +160,7 @@ it('loads prompts and injects context into blade files', function () {
 it('can load a pdf via s3', function () {
     $ocr = resolve(TextractUsingS3Upload::class);
 
-    $pdfFile = file_get_contents(__DIR__.'/samples/wolt-food-delivery.pdf');
+    $pdfFile = file_get_contents(__DIR__ . '/samples/wolt-food-delivery.pdf');
 
     $text = $ocr->load($pdfFile);
 

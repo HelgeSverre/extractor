@@ -5,7 +5,6 @@ The data points you are required to extract include:
 - {{ $field }} ({{ $description }})
 @endforeach
 
-In a situation where there are no suitable values for any of the above information, set the value as null in your response.
 The output should be a flat list of JSON objects.
 
 {{ $input }}
