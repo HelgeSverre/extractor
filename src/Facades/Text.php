@@ -2,16 +2,16 @@
 
 namespace HelgeSverre\Extractor\Facades;
 
-use HelgeSverre\Extractor\TextLoaderFactory;
+use HelgeSverre\Extractor\Text\Factory;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see TextLoaderFactory
+ * @see Factory
  */
 class Text extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return TextLoaderFactory::class;
+        return Factory::class;
     }
 }

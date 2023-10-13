@@ -1,12 +1,12 @@
 <?php
 
-use HelgeSverre\Extractor\TextUtils;
+use HelgeSverre\Extractor\Text\Utils;
 
 it('normalizes whitespace', function () {
     $input = '   Hello   World!   ';
     $expectedOutput = 'Hello World!';
 
-    $output = TextUtils::normalizeWhitespace($input);
+    $output = Utils::normalizeWhitespace($input);
 
     expect($output)->toBe($expectedOutput);
 });
@@ -27,7 +27,7 @@ it('removes unwanted elements from HTML', function () {
     ';
     $expectedOutput = 'This is a test page.';
 
-    $output = TextUtils::cleanHtml($html);
+    $output = Utils::cleanHtml($html);
 
     expect($output)->toBe($expectedOutput);
 });
@@ -37,7 +37,7 @@ it('keeps whitespaces in HTML', function () {
         <p>Hello   World!</p>
     ';
 
-    $output = TextUtils::cleanHtml($html, elementsToRemove: [], normalizeWhitespace: true);
+    $output = Utils::cleanHtml($html, elementsToRemove: [], normalizeWhitespace: true);
 
     expect($output)->toBe('Hello World!');
 });
@@ -55,7 +55,7 @@ it('ignores the head tag when cleaning html', function () {
     ';
     $expectedOutput = 'This is a test page.';
 
-    $output = TextUtils::cleanHtml($html);
+    $output = Utils::cleanHtml($html);
 
     expect($output)->toBe($expectedOutput);
 });
@@ -72,7 +72,7 @@ it('removes comments from HTML', function () {
     ';
     $expectedOutput = 'This is a test page.';
 
-    $output = TextUtils::cleanHtml($html);
+    $output = Utils::cleanHtml($html);
 
     expect($output)->toBe($expectedOutput);
 });

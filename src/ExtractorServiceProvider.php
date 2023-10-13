@@ -3,6 +3,7 @@
 namespace HelgeSverre\Extractor;
 
 use Aws\Textract\TextractClient;
+use HelgeSverre\Extractor\Text\Factory;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -22,7 +23,14 @@ class ExtractorServiceProvider extends PackageServiceProvider
             $this->package->basePath('/../resources/prompts') => base_path("resources/views/vendor/{$this->packageView($this->package->viewNamespace)}"),
         ], "{$this->packageView($this->package->viewNamespace)}-prompts");
 
-        $this->app->singleton(TextLoaderFactory::class, fn ($app) => new TextLoaderFactory($app));
+        $this->app->singleton(Factory::class, fn ($app) => new Factory($app));
+        $this->app->singleton(ExtractorManager::class, function ($app) {
+            $manager = new ExtractorManager();
+
+            $manager->extend('contacts', fn () => new Extraction\Builtins\Contacts);
+
+            return $manager;
+        });
 
         $this->app->bind(TextractClient::class, fn () => new TextractClient([
             'region' => config('extractor.textract_region'),

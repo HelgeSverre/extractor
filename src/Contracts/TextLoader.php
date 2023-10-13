@@ -2,7 +2,7 @@
 
 namespace HelgeSverre\Extractor\Contracts;
 
-use HelgeSverre\Extractor\TextContent;
+use HelgeSverre\Extractor\Text\TextContent;
 
 interface TextLoader
 {

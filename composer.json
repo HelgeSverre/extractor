@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "ext-zip": "*",
         "aws/aws-sdk-php": "^3.281",
         "illuminate/contracts": "^10.0",
@@ -27,6 +27,7 @@
         "openai-php/laravel": "^0.7.0",
         "prinsfrank/standards": "^2.1",
         "smalot/pdfparser": "*",
+        "spatie/laravel-data": "^3.9",
         "spatie/laravel-package-tools": "^1.14.0",
         "symfony/dom-crawler": "^6.3"
     },

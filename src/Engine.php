@@ -2,9 +2,10 @@
 
 namespace HelgeSverre\Extractor;
 
-use HelgeSverre\Extractor\Contracts\Extractor;
 use HelgeSverre\Extractor\Enums\Model;
 use HelgeSverre\Extractor\Exceptions\InvalidJsonReturnedError;
+use HelgeSverre\Extractor\Extraction\Extractor;
+use HelgeSverre\Extractor\Text\TextContent;
 use OpenAI\Laravel\Facades\OpenAI;
 use OpenAI\Responses\Chat\CreateResponse as ChatResponse;
 use OpenAI\Responses\Completions\CreateResponse as CompletionResponse;

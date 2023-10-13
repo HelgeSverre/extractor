@@ -2,26 +2,6 @@
 
 return [
 
-    'default' => 'contacts',
-
-    'fallback' => [
-        'model' => 'gpt-3.5-turbo',
-        'max_tokens' => 2000,
-        'temperature' => 0.2,
-    ],
-
-    // Register and configure the extractors
-    'extractors' => [
-        'contacts' => [
-            'fields' => [
-                'name' => '',
-                'role' => 'job function or title',
-                'phone' => '',
-                'email' => '',
-            ],
-        ],
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Textract Timeout

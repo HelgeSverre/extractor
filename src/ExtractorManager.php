@@ -3,31 +3,39 @@
 namespace HelgeSverre\Extractor;
 
 use HelgeSverre\Extractor\Enums\Model;
-use HelgeSverre\Extractor\Extractors\Contacts;
-use HelgeSverre\Extractor\Extractors\Emails;
-use HelgeSverre\Extractor\Extractors\Payslip;
-use HelgeSverre\Extractor\Extractors\PhoneNumbers;
-use HelgeSverre\Extractor\Extractors\Receipt;
-use HelgeSverre\Extractor\Extractors\Rundown;
-use Illuminate\Support\Manager;
+use HelgeSverre\Extractor\Text\TextContent;
 
-// TODO: rename Engine
-class ExtractorManager extends Manager
+class ExtractorManager
 {
-    public function getDefaultDriver()
+    protected array $extractors = [];
+
+    public function extend(string $name, callable $callback): void
     {
-        return $this->config->get('extractor.default');
+        $this->extractors[$name] = $callback;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function extract(
-        $extractor,
+        string $nameOrClass,
         TextContent|string $input,
         Model $model = null,
         int $maxTokens = null,
-        float $temperature = null,
+        float $temperature = null
     ): ?array {
-        $driver = self::driver($extractor);
-        $engine = new Engine($driver);
+        // If the given name is an alias registered with extend(), use it.
+        if (isset($this->extractors[$nameOrClass])) {
+            $extractor = call_user_func($this->extractors[$nameOrClass]);
+        } // Otherwise, assume it's a direct class name.
+        else {
+            if (! class_exists($nameOrClass)) {
+                throw new \Exception("Extractor class [$nameOrClass] not found.");
+            }
+            $extractor = app($nameOrClass); // or new $nameOrClass(), but using app() for potential DI
+        }
+
+        $engine = new Engine($extractor);
 
         return $engine->run(
             input: $input,
@@ -35,41 +43,5 @@ class ExtractorManager extends Manager
             maxTokens: $maxTokens,
             temperature: $temperature
         );
-    }
-
-    public function createContactsDriver()
-    {
-        return new Contacts(
-            $this->config->get('extractor.extractors.contacts'),
-        );
-    }
-
-    public function createEmailsDriver()
-    {
-        return new Emails;
-    }
-
-    public function createPayslipDriver()
-    {
-        return new Payslip;
-
-    }
-
-    public function createPhoneNumbersDriver()
-    {
-        return new PhoneNumbers;
-
-    }
-
-    public function createReceiptDriver()
-    {
-        return new Receipt;
-
-    }
-
-    public function createRundownDriver()
-    {
-        return new Rundown;
-
     }
 }

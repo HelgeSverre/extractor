@@ -1,7 +1,7 @@
 <?php
 
 use HelgeSverre\Extractor\Facades\Text;
-use HelgeSverre\Extractor\TextContent;
+use HelgeSverre\Extractor\Text\TextContent;
 
 it('Can load Text', function () {
     $text = Text::text(file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.txt'));
@@ -34,6 +34,15 @@ it('Can OCR images', function () {
 });
 
 it('Can OCR Pdfs', function () {
+    $text = Text::textract(file_get_contents(__DIR__.'/samples/laravel-certification-invoice.pdf'));
+
+    expect($text)->toBeInstanceOf(TextContent::class)->and($text->toString())->toContain(
+        'contact@laravelcert.com',
+        'Helge Sverre Hessevik Liseth',
+    );
+});
+
+it('Can OCR Pdfs via s3', function () {
     $text = Text::textractUsingS3Upload(file_get_contents(__DIR__.'/samples/laravel-certification-invoice.pdf'));
 
     expect($text)->toBeInstanceOf(TextContent::class)->and($text->toString())->toContain(

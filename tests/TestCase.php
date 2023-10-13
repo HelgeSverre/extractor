@@ -29,14 +29,14 @@ class TestCase extends Orchestra
 
         config()->set('openai.api_key', env('OPENAI_API_KEY'));
 
-        config()->set('receipt-scanner.textract_timeout', 30);
-        config()->set('receipt-scanner.textract_polling_interval', 2);
+        config()->set('extractor.textract_timeout', 30);
+        config()->set('extractor.textract_polling_interval', 2);
 
-        config()->set('receipt-scanner.textract_disk', 'textract');
-        config()->set('receipt-scanner.textract_region', env('TEXTRACT_REGION'));
-        config()->set('receipt-scanner.textract_version', env('TEXTRACT_VERSION'));
-        config()->set('receipt-scanner.textract_key', env('TEXTRACT_KEY'));
-        config()->set('receipt-scanner.textract_secret', env('TEXTRACT_SECRET'));
+        config()->set('extractor.textract_disk', 'textract');
+        config()->set('extractor.textract_region', env('TEXTRACT_REGION'));
+        config()->set('extractor.textract_version', env('TEXTRACT_VERSION'));
+        config()->set('extractor.textract_key', env('TEXTRACT_KEY'));
+        config()->set('extractor.textract_secret', env('TEXTRACT_SECRET'));
 
         // Use same config as the textract bucket, for testing.
         config()->set('filesystems.disks.textract.driver', 's3');
