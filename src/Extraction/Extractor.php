@@ -6,6 +6,8 @@ use HelgeSverre\Extractor\Text\TextContent;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use OpenAI\Responses\Chat\CreateResponse as ChatResponse;
+use OpenAI\Responses\Completions\CreateResponse as CompletionResponse;
 
 abstract class Extractor
 {
@@ -86,6 +88,11 @@ abstract class Extractor
             $response = $processor($response, $this);
         }
 
+        return $response;
+    }
+
+    public function processResponse(ChatResponse|CompletionResponse $response): ChatResponse|CompletionResponse
+    {
         return $response;
     }
 }

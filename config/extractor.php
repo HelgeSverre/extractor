@@ -2,6 +2,9 @@
 
 return [
 
+    'openai_api_key' => env('OPENAI_API_KEY'),
+    'openai_org_id' => env('OPENAI_ORG_ID'),
+
     /*
     |--------------------------------------------------------------------------
     | Textract Timeout

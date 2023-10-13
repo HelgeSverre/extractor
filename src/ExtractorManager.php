@@ -2,7 +2,9 @@
 
 namespace HelgeSverre\Extractor;
 
+use Exception;
 use HelgeSverre\Extractor\Enums\Model;
+use HelgeSverre\Extractor\Extraction\Extractor;
 use HelgeSverre\Extractor\Text\TextContent;
 
 class ExtractorManager
@@ -15,26 +17,16 @@ class ExtractorManager
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function extract(
-        string $nameOrClass,
+        string|Extractor $nameOrClass,
         TextContent|string $input,
         Model $model = null,
         int $maxTokens = null,
         float $temperature = null
     ): ?array {
-        // If the given name is an alias registered with extend(), use it.
-        if (isset($this->extractors[$nameOrClass])) {
-            $extractor = call_user_func($this->extractors[$nameOrClass]);
-        } // Otherwise, assume it's a direct class name.
-        else {
-            if (! class_exists($nameOrClass)) {
-                throw new \Exception("Extractor class [$nameOrClass] not found.");
-            }
-            $extractor = app($nameOrClass); // or new $nameOrClass(), but using app() for potential DI
-        }
-
+        $extractor = $this->resolveExtractor($nameOrClass);
         $engine = new Engine($extractor);
 
         return $engine->run(
@@ -43,5 +35,26 @@ class ExtractorManager
             maxTokens: $maxTokens,
             temperature: $temperature
         );
+    }
+
+    protected function resolveExtractor(string|Extractor $nameOrClass): Extractor
+    {
+        // If it's already an instance of Extractor, return it.
+        if ($nameOrClass instanceof Extractor) {
+            return $nameOrClass;
+        }
+
+        // If the given name is an alias registered with extend(), use it.
+        if (isset($this->extractors[$nameOrClass])) {
+            return call_user_func($this->extractors[$nameOrClass]);
+        }
+
+        // Otherwise, assume it's a direct class name.
+        if (! class_exists($nameOrClass)) {
+            throw new Exception("Extractor class [$nameOrClass] not found.");
+        }
+
+        // Try to resolve it from the container.
+        return app($nameOrClass);
     }
 }

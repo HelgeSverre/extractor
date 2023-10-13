@@ -1,12 +1,15 @@
 <?php
 
-namespace HelgeSverre\Extractor\Extraction\Base;
+namespace HelgeSverre\Extractor\Extraction\Concerns;
 
 use HelgeSverre\Extractor\Extraction\Extractor;
 use Spatie\LaravelData\Contracts\BaseData;
 use Spatie\LaravelData\WithData;
 
-abstract class DtoExtractor extends Extractor
+/**
+ * @mixin Extractor
+ */
+trait HasDto
 {
     use WithData;
 

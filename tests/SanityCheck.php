@@ -1,8 +1,11 @@
 <?php
 
 use HelgeSverre\Extractor\Enums\Model;
+use HelgeSverre\Extractor\Extraction\Builtins\Contacts;
 use HelgeSverre\Extractor\Facades\Extractor;
 use HelgeSverre\Extractor\Facades\Text;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
 use OpenAI\Laravel\Facades\OpenAI;
 use OpenAI\Responses\Completions\CreateResponse as CompletionResponse;
 
@@ -16,11 +19,40 @@ it('can extract a complex rundown', function () {
 
 });
 
-it('can extract contacts from a website', function () {
+it('can extract contacts from a website with custom model and class string', function () {
+    $text = Text::web('https://crescat.io/contact/');
+    $data = Extractor::extract(new Contacts, $text, model: Model::TURBO_INSTRUCT);
+    dump($data);
+});
+
+it('can extract contacts from a website with custom model and instance of extractor', function () {
+    $text = Text::web('https://crescat.io/contact/');
+    $data = Extractor::extract(new Contacts, $text, model: Model::TURBO_INSTRUCT);
+    dump($data);
+});
+
+it('can extract contacts from a website with custom model and alias of extractor', function () {
+    $text = Text::web('https://crescat.io/contact/');
+    Extractor::extend('dummy', fn () => new Contacts);
+    $data = Extractor::extract('dummy', $text, model: Model::TURBO_INSTRUCT);
+    dump($data);
+});
+
+it('can load an extractor straight from a prompt file', function () {
+
+    // Fake the storage disk
+    Storage::fake('local');
+
+    // Create a view file dynamically
+    Storage::disk('local')->put('views/test.blade.php', '<h1>Hello, {{ $name }}</h1>');
+
+    View::partialMock()->shouldReceive('make')
+        ->with('test', ['name' => 'John'])
+        ->andReturn('Hello, John');
 
     $text = Text::web('https://crescat.io/contact/');
 
-    $data = Extractor::extract('contacts', $text);
+    $data = Extractor::view('contacts', $text);
 
     dump($data);
 
