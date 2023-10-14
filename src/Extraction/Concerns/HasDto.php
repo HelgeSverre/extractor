@@ -13,24 +13,32 @@ trait HasDto
 {
     abstract public function dataClass(): string;
 
-    public function handle(string $response): mixed
+    public function isCollection(): bool
     {
-        $dataClass = match (true) {
-            /** @psalm-suppress UndefinedThisPropertyFetch */
-            property_exists($this, 'dataClass') => $this->dataClass,
-            method_exists($this, 'dataClass') => $this->dataClass(),
-            default => null,
-        };
-
-        if (!is_a($dataClass, BaseData::class, true)) {
-            throw InvalidDataClass::create($dataClass);
-        }
-
-        return $dataClass::from($response);
+        return false;
     }
 
-    public function bootTrimsInput()
+    public function bootHasDto()
     {
-        $this->registerProcessor($this->handle(...));
+        $this->registerProcessor(function ($response): mixed {
+            $dataClass = match (true) {
+                /** @psalm-suppress UndefinedThisPropertyFetch */
+                property_exists($this, 'dataClass') => $this->dataClass,
+                method_exists($this, 'dataClass') => $this->dataClass(),
+                default => null,
+            };
+
+            if (! is_a($dataClass, BaseData::class, true)) {
+                throw InvalidDataClass::create($dataClass);
+            }
+
+            if (! is_array($response)) {
+                $response = json_decode($response, true);
+            }
+
+            return $this->isCollection()
+                ? $dataClass::collection($response)
+                : $dataClass::from($response);
+        });
     }
 }

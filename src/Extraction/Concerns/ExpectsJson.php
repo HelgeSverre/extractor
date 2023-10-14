@@ -10,22 +10,16 @@ use HelgeSverre\Extractor\Extraction\Extractor;
  */
 trait ExpectsJson
 {
-    /**
-     * @throws InvalidJsonReturnedError
-     */
-    public function handle(string $response): mixed
-    {
-        $decoded = json_decode($response, true);
-
-        if ($decoded === null) {
-            throw new InvalidJsonReturnedError("Invalid JSON returned:\n$response");
-        }
-
-        return $decoded;
-    }
-
     public function bootExpectsJson()
     {
-        $this->registerProcessor([$this, 'handle']);
+        $this->registerProcessor(function (string $response) {
+            $decoded = json_decode($response, true);
+
+            if ($decoded === null) {
+                throw new InvalidJsonReturnedError("Invalid JSON returned:\n$response");
+            }
+
+            return $decoded;
+        });
     }
 }

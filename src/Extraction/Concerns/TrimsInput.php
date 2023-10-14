@@ -11,13 +11,10 @@ use Illuminate\Support\Str;
  */
 trait TrimsInput
 {
-    public function handle(TextContent|string $input): string
-    {
-        return Str::of($input)->squish()->trim()->toString();
-    }
-
     public function bootTrimsInput()
     {
-        $this->registerProcessor([$this, 'handle']);
+        $this->registerPreprocessor(function (TextContent|string $input): string {
+            return Str::of($input)->squish()->trim()->toString();
+        });
     }
 }
