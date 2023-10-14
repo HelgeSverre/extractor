@@ -13,7 +13,7 @@ trait HasValidation
 {
     abstract public function rules(): array;
 
-    public function validateResponse(string $input)
+    public function handle(string $input)
     {
         $validator = Validator::make(['input' => $input], $this->rules());
 
@@ -26,6 +26,6 @@ trait HasValidation
 
     public function bootValidatesInput()
     {
-        $this->registerProcessor([$this, 'validateResponse']);
+        $this->registerProcessor([$this, 'handle']);
     }
 }

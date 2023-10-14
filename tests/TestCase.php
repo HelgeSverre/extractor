@@ -6,6 +6,7 @@ use Dotenv\Dotenv;
 use HelgeSverre\Extractor\ExtractorServiceProvider;
 use OpenAI\Laravel\ServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Spatie\LaravelData\LaravelDataServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -14,6 +15,7 @@ class TestCase extends Orchestra
         return [
             ExtractorServiceProvider::class,
             ServiceProvider::class,
+            LaravelDataServiceProvider::class,
         ];
     }
 
@@ -21,7 +23,7 @@ class TestCase extends Orchestra
     public function getEnvironmentSetUp($app)
     {
         // Load .env.test into the environment.
-        if (file_exists(dirname(__DIR__).'/.env')) {
+        if (file_exists(dirname(__DIR__) . '/.env')) {
             (Dotenv::createImmutable(dirname(__DIR__), '.env'))->load();
         }
 

@@ -7,8 +7,6 @@ use HelgeSverre\Extractor\Facades\Extractor;
 use HelgeSverre\Extractor\Facades\Text;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
-use OpenAI\Laravel\Facades\OpenAI;
-use OpenAI\Responses\Completions\CreateResponse as CompletionResponse;
 
 it('can extract a complex rundown', function () {
 
@@ -22,8 +20,9 @@ it('can extract a complex rundown', function () {
 
 it('can extract contacts from a website with custom model and class string', function () {
     $text = Text::web('https://crescat.io/contact/');
-    $data = Extractor::extract(new Contacts, $text, model: Model::TURBO_INSTRUCT);
-    dump($data);
+    /** @var \HelgeSverre\Extractor\ContactDto $data */
+    $data = Extractor::extract(Contacts::class, $text, model: Model::TURBO_INSTRUCT);
+    dump($data->toArray());
 });
 
 it('can extract contacts from a website with custom model and instance of extractor', function () {

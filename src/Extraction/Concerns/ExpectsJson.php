@@ -13,7 +13,7 @@ trait ExpectsJson
     /**
      * @throws InvalidJsonReturnedError
      */
-    public function process(string $response): mixed
+    public function handle(string $response): mixed
     {
         $decoded = json_decode($response, true);
 
@@ -22,5 +22,10 @@ trait ExpectsJson
         }
 
         return $decoded;
+    }
+
+    public function bootExpectsJson()
+    {
+        $this->registerProcessor([$this, 'handle']);
     }
 }

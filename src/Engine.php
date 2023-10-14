@@ -22,7 +22,7 @@ class Engine
         Model|string $model = null,
         int $maxTokens = null,
         float $temperature = null,
-    ): ?array {
+    ): mixed {
         $preprocessed = $this->extractor->preprocess($input);
 
         $selectedModel = $model?->value ?? $model ?? $this->extractor->model() ?? self::DEFAULT_MODEL;

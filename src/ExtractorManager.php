@@ -25,7 +25,7 @@ class ExtractorManager
         Model $model = null,
         int $maxTokens = null,
         float $temperature = null
-    ): ?array {
+    ): mixed {
         $extractor = $this->resolveExtractor($nameOrClass);
         $engine = new Engine($extractor);
 
