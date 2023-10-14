@@ -2,6 +2,7 @@
 
 use HelgeSverre\Extractor\Enums\Model;
 use HelgeSverre\Extractor\Extraction\Builtins\Contacts;
+use HelgeSverre\Extractor\Extraction\Builtins\Receipt;
 use HelgeSverre\Extractor\Facades\Extractor;
 use HelgeSverre\Extractor\Facades\Text;
 use Illuminate\Support\Facades\Storage;
@@ -59,15 +60,15 @@ it('can load an extractor straight from a prompt file', function () {
 });
 
 it('validates returning parsed receipt as array', function () {
-    OpenAI::fake([
-        CompletionResponse::fake([
-            'model' => 'gpt-3.5-turbo',
-            'choices' => [['text' => file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.json')]],
-        ]),
-    ]);
+    //    OpenAI::fake([
+    //        CompletionResponse::fake([
+    //            'model' => 'gpt-3.5-turbo',
+    //            'choices' => [['text' => file_get_contents(__DIR__ . '/samples/wolt-pizza-norwegian.json')]],
+    //        ]),
+    //    ]);
 
     $text = file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.txt');
-    $result = Extractor::extract('receipt', $text, model: Model::TURBO_INSTRUCT);
+    $result = Extractor::extract(Receipt::class, $text, model: Model::TURBO_INSTRUCT);
 
     expect($result)->toBeArray()
         ->and($result['totalAmount'])->toBe(568.00)
