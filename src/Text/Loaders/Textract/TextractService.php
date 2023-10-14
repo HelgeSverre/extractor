@@ -56,10 +56,10 @@ class TextractService
 
             $nextToken = null;
             do {
-                $response = $this->textractClient->getDocumentTextDetection([
+                $response = $this->textractClient->getDocumentTextDetection(array_filter([
                     'JobId' => $jobId,
                     'NextToken' => $nextToken,
-                ]);
+                ]));
 
                 $rawStatus = Arr::get($response, 'JobStatus');
                 $status = Status::tryFrom($rawStatus);
@@ -67,9 +67,10 @@ class TextractService
                 switch ($status) {
                     case Status::statusSucceeded:
                         $finalText .= Response::fromAwsResult($response)?->text();
-                        $nextToken = Arr::get($response, 'NextToken'); // Set the nextToken if it exists
-                        if (! $nextToken) { // if there's no next token, we break
-                            break 2; // Break the outer loop
+                        $nextToken = Arr::get($response, 'NextToken');
+
+                        if (! $nextToken) {
+                            return $finalText;
                         }
                         break;
 
@@ -85,8 +86,6 @@ class TextractService
                 }
             } while ($nextToken);
         }
-
-        return $finalText; // Return the concatenated result
     }
 
     public function bytesToText(string $content): ?string
