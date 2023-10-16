@@ -21,6 +21,7 @@ trait HasDto
     public function bootHasDto(): void
     {
         $this->registerProcessor(function ($response): mixed {
+
             $dataClass = match (true) {
                 /** @psalm-suppress UndefinedThisPropertyFetch */
                 property_exists($this, 'dataClass') => $this->dataClass,
@@ -39,6 +40,6 @@ trait HasDto
             return $this->isCollection()
                 ? $dataClass::collection($response)
                 : $dataClass::from($response);
-        });
+        }, 1000);
     }
 }

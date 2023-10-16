@@ -48,8 +48,6 @@ class Engine
                 ],
             ]);
 
-        $response = $this->extractor->processResponse($response);
-
         $text = $this->extractResponseText($response);
 
         return $this->extractor->process($text);
@@ -64,7 +62,7 @@ class Engine
         ]);
     }
 
-    protected function extractResponseText(ChatResponse|CompletionResponse $response): string
+    public function extractResponseText(ChatResponse|CompletionResponse $response): mixed
     {
         return $response instanceof ChatResponse
             ? $response->choices[0]->message->content

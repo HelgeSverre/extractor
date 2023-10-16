@@ -2,12 +2,11 @@
 
 namespace HelgeSverre\Extractor\Extraction;
 
+use HelgeSverre\Extractor\Exceptions\InvalidJsonReturnedError;
 use HelgeSverre\Extractor\Text\TextContent;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use OpenAI\Responses\Chat\CreateResponse as ChatResponse;
-use OpenAI\Responses\Completions\CreateResponse as CompletionResponse;
 
 abstract class Extractor
 {
@@ -44,16 +43,18 @@ abstract class Extractor
         }
     }
 
-    public function registerPreprocessor(callable $callback): self
+    public function registerPreprocessor(callable $callback, int $priority = 100): self
     {
-        $this->preprocessors[] = $callback;
+        $this->preprocessors[] = ['callback' => $callback, 'priority' => $priority];
+        usort($this->preprocessors, fn ($a, $b) => $a['priority'] <=> $b['priority']);
 
         return $this;
     }
 
-    public function registerProcessor(callable $callback): self
+    public function registerProcessor(callable $callback, int $priority = 100): self
     {
-        $this->processors[] = $callback;
+        $this->processors[] = ['callback' => $callback, 'priority' => $priority];
+        usort($this->processors, fn ($a, $b) => $a['priority'] <=> $b['priority']);
 
         return $this;
     }
@@ -75,24 +76,37 @@ abstract class Extractor
 
     public function preprocess(TextContent|string $input): string
     {
-        foreach ($this->preprocessors as $preprocessor) {
+        foreach (Arr::pluck($this->preprocessors, 'callback') as $preprocessor) {
             $input = $preprocessor($input, $this);
         }
 
         return $input;
     }
 
+    public function throwsOnInvalidJsonResponse(): bool
+    {
+        return true;
+    }
+
+    public function decodeResponse($response)
+    {
+        $decoded = json_decode($response, true);
+
+        if ($decoded === null && $this->throwsOnInvalidJsonResponse()) {
+            throw new InvalidJsonReturnedError("Invalid JSON returned:\n$response");
+        }
+
+        return $decoded;
+    }
+
     public function process($response): mixed
     {
-        foreach ($this->processors as $processor) {
+        $response = $this->decodeResponse($response);
+
+        foreach (Arr::pluck($this->processors, 'callback') as $processor) {
             $response = $processor($response, $this);
         }
 
-        return $response;
-    }
-
-    public function processResponse(ChatResponse|CompletionResponse $response): ChatResponse|CompletionResponse
-    {
         return $response;
     }
 }

@@ -22,7 +22,7 @@ it('can extract contacts from a website with custom model and class string', fun
     $text = Text::web('https://crescat.io/contact/');
     /** @var \HelgeSverre\Extractor\ContactDto $data */
     $data = Extractor::extract(Contacts::class, $text, model: Model::TURBO_INSTRUCT);
-    dump($data);
+    dump($data->toArray());
 });
 
 it('can extract contacts from a website with custom model and instance of extractor', function () {

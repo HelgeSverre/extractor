@@ -13,17 +13,21 @@ trait HasValidation
 {
     abstract public function rules(): array;
 
-    public function bootHasValidation()
+    public function throwsOnValidationFailure(): bool
     {
-        // TODO: this depends on the input being an array.
-        $this->registerProcessor(function (string $input) {
-            $validator = Validator::make(['input' => $input], $this->rules());
+        return false;
+    }
 
-            if ($validator->fails()) {
+    public function bootHasValidation(): void
+    {
+        $this->registerProcessor(function ($data) {
+            $validator = Validator::make($data, $this->rules());
+
+            if ($validator->fails() && $this->throwsOnValidationFailure()) {
                 throw new ValidationException($validator);
             }
 
-            return $input;
-        });
+            return $validator->valid();
+        }, 100);
     }
 }
