@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
  */
 trait TrimsInput
 {
-    public function bootTrimsInput()
+    public function bootTrimsInput(): void
     {
         $this->registerPreprocessor(function (TextContent|string $input): string {
             return Str::of($input)->squish()->trim()->toString();

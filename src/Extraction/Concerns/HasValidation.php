@@ -15,6 +15,7 @@ trait HasValidation
 
     public function bootHasValidation()
     {
+        // TODO: this depends on the input being an array.
         $this->registerProcessor(function (string $input) {
             $validator = Validator::make(['input' => $input], $this->rules());
 

@@ -18,7 +18,7 @@ trait HasDto
         return false;
     }
 
-    public function bootHasDto()
+    public function bootHasDto(): void
     {
         $this->registerProcessor(function ($response): mixed {
             $dataClass = match (true) {

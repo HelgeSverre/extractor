@@ -82,7 +82,7 @@ abstract class Extractor
         return $input;
     }
 
-    public function process(string $response): mixed
+    public function process($response): mixed
     {
         foreach ($this->processors as $processor) {
             $response = $processor($response, $this);

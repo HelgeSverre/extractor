@@ -10,9 +10,10 @@ use HelgeSverre\Extractor\Extraction\Extractor;
  */
 trait ExpectsJson
 {
-    public function bootExpectsJson()
+    public function bootExpectsJson(): void
     {
         $this->registerProcessor(function (string $response) {
+
             $decoded = json_decode($response, true);
 
             if ($decoded === null) {
