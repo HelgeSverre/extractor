@@ -24,9 +24,15 @@ class ExtractorManager
         TextContent|string $input,
         Model $model = null,
         int $maxTokens = null,
-        float $temperature = null
+        float $temperature = null,
+        array $config = null,
     ): mixed {
         $extractor = $this->resolveExtractor($nameOrClass);
+
+        if ($config) {
+            $extractor->mergeConfig($config);
+        }
+
         $engine = new Engine($extractor);
 
         return $engine->run(

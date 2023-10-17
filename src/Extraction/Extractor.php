@@ -109,4 +109,11 @@ abstract class Extractor
 
         return $response;
     }
+
+    public function mergeConfig(array $config): self
+    {
+        $this->config = array_merge($this->config, $config);
+
+        return $this;
+    }
 }
