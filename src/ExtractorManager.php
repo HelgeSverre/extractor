@@ -4,6 +4,7 @@ namespace HelgeSverre\Extractor;
 
 use Exception;
 use HelgeSverre\Extractor\Extraction\Builtins\Fields;
+use HelgeSverre\Extractor\Extraction\Builtins\Simple;
 use HelgeSverre\Extractor\Extraction\Extractor;
 use HelgeSverre\Extractor\Text\TextContent;
 
@@ -21,9 +22,6 @@ class ExtractorManager
         $this->extractors[$name] = $callback;
     }
 
-    /**
-     * @throws Exception
-     */
     public function extract(
         string|Extractor $nameOrClass,
         TextContent|string $input,
@@ -37,6 +35,27 @@ class ExtractorManager
         if ($config) {
             $extractor->mergeConfig($config);
         }
+
+        return $this->engine->run(
+            extractor: $extractor,
+            input: $input,
+            model: $model ?? $extractor->model(),
+            maxTokens: $maxTokens ?? $extractor->maxTokens(),
+            temperature: $temperature ?? $extractor->temperature(),
+        );
+    }
+
+    public function view(
+        string $view,
+        TextContent|string $input,
+        array $config = null,
+        string $model = null,
+        int $maxTokens = 2000,
+        float $temperature = 0.1,
+    ): mixed {
+        $extractor = new Simple(array_merge($config, [
+            'view' => $view,
+        ]));
 
         return $this->engine->run(
             extractor: $extractor,

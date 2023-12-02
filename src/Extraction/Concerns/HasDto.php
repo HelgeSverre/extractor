@@ -20,7 +20,6 @@ trait HasDto
 
     public function bootHasDto(): void
     {
-
         $this->registerProcessor(function ($response): mixed {
             $dataClass = match (true) {
                 property_exists($this, 'dataClass') => $this->dataClass,

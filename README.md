@@ -1,4 +1,4 @@
-<p align="center"><img src=".github/header.png"></p>
+<p align="center"><img src=".github/header.webp"></p>
 
 # Extractor: AI-Powered Data Extraction for your Laravel application.
 
@@ -11,8 +11,7 @@ Laravel application.
 ## Features
 
 - A convenient wrapper around OpenAI Chat and Completion endpoints.
-- Takes text as input and provides structured information.
-- Includes a finely tuned prompt for parsing data.
+- Takes text as input and returns an array, or spatie/data in return,.
 - Supports multiple input formats such as Plain Text, PDF, Images, Word documents, and Web content.
 - Integrates with [Textract](https://aws.amazon.com/textract/) for OCR functionality.
 
@@ -40,24 +39,67 @@ their configuration and add the `OPENAI_API_KEY` to your `.env` file:
 OPENAI_API_KEY="your-key-here"
 ```
 
-## Usage
+## OCR Configuration with AWS Textract
 
-### Extracting data from Plain Text
+To use AWS Textract for extracting text from large images and multi-page PDFs,
+the package needs to upload the file to S3 and pass the s3 object location along to the textract service.
 
-Plain text extraction is useful when you already have textual data that needs to be processed.
+So you need to configure your AWS Credentials in the `config/extractor.php` file as follows:
 
-Here's an example using plain text data:
+```dotenv
+TEXTRACT_KEY="your-aws-access-key"
+TEXTRACT_SECRET="your-aws-security"
+TEXTRACT_REGION="your-textract-region"
 
-```php
-$text = <<<DATA
-Your structured data goes here.
-Replace this with your text.
-DATA;
-
-Extractor::extract($text);
+# Can be omitted
+TEXTRACT_VERSION="2018-06-27"
 ```
 
-### Loading text content with various file formats
+You also need to configure a seperate Textract disk where the files will be stored,
+open your  `config/filesystems.php` configuration file and add the following:
+
+```php
+'textract' => [
+    'driver' => 's3',
+    'key' => env('TEXTRACT_KEY'),
+    'secret' => env('TEXTRACT_SECRET'),
+    'region' => env('TEXTRACT_REGION'),
+    'bucket' => env('TEXTRACT_BUCKET'),
+],
+```
+
+Ensure the `textract_disk` setting in `config/extractor.php` is the same as your disk name in
+the `filesystems.php`
+config, you can change it with the .env value `TEXTRACT_DISK`.
+
+```php
+return [
+    "textract_disk" => env("TEXTRACT_DISK")
+];
+```
+
+`.env`
+
+```dotenv
+TEXTRACT_DISK="uploads"
+```
+
+**Note**
+
+Textract is not available in all regions:
+
+> Q: In which AWS regions is Amazon Textract available?
+> Amazon Textract is currently available in the US East (Northern Virginia), US East (Ohio), US West (Oregon), US West (
+> N. California), AWS GovCloud (US-West), AWS GovCloud (US-East), Canada (Central), EU (Ireland), EU (London), EU (
+> Frankfurt), EU (Paris), Asia Pacific (Singapore), Asia Pacific (Sydney), Asia Pacific (Seoul), and Asia Pacific (
+> Mumbai)
+> Regions.
+
+See: https://aws.amazon.com/textract/faqs/
+
+## Usage
+
+### Extracting plain text from documents
 
 ```php
 use HelgeSverre\Extractor\Facades\Text;
@@ -81,245 +123,240 @@ $textHtml = Text::html(file_get_contents('./data.html'));
 | Fetches HTML from an URL via HTTP, strip all HTML tags, squish and trim all whitespace.                                                                                                                       | `Text::web`                   |
 | Extract text from an HTML file (same, but for HTML content)                                                                                                                                                   | `Text::html`                  |
 
-## Included Extractors
+## Extracting structured data
 
 The `Extractor` package includes a set of pre-built extractors designed to simplify the extraction of structured data
 from various types of text. Each extractor is optimized for specific data formats, making it easy to process different
 types of information. Below is a list of the included extractors along with brief descriptions and convenient shortened
 methods for each:
 
-| Example                                       | Extractor    | Description                                                                       |
-|-----------------------------------------------|--------------|-----------------------------------------------------------------------------------|
-| `Extractor::extract("receipt", $text);`       | Receipt      | Extracts structured data from receipts and invoices.                              |
-| `Extractor::extract("payslip", $text);`       | Payslip      | Extracts data from payslips, including salary details.                            |
-| `Extractor::extract("recipe", $text);`        | Recipe       | Extracts ingredients and cooking instructions from recipes.                       |
-| `Extractor::extract("contacts", $text);`      | Contacts     | Extracts contact information such as names, addresses, and phone numbers.         |
-| `Extractor::extract("emails", $text);`        | Emails       | Identifies and extracts email addresses from text.                                |
-| `Extractor::extract("phone numbers", $text);` | PhoneNumbers | Extracts phone numbers from text and returns an array of strings in E.164 format. |
+| Example                                                          | Extractor | Description                                                                                                         |
+|------------------------------------------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------|
+| `Extractor::extract(Contacts::class, $text);`                    | Receipt   | Extracts structured data from receipts and invoices.                                                                |
+| `Extractor::extract(Receipt::class, $text);`                     | Recipe    | Extracts ingredients and cooking instructions from recipes.                                                         |
+| `Extractor::fields($text, fields: ["name","address", "phone"]);` | Fields    | Extracts arbitrary fields provided as an array of output key, and optional description, also supports nested fields |
 
 These extractors are provided out of the box and offer a convenient way to extract specific types of structured data
 from text. You can use the shortened methods to easily access the functionality of each extractor.
 
-## How it works
+## Using the Field extractor
 
-Extractor is a package that uses the power of LLMs, prompts and cleverness to turn unstructured text data into
-structured JSON.
+The field extractor is great if you don't need much custom logic or validation and just want to extract out some
+structured data from a piece of text.
 
-This is done by first turning whatever unstructured data you have into plain text, injecting that text into a text
-prompt that describes what data we want to extract, then sending that prompt to OpenAI, the response is then converted
-to JSON and is optionally passed through validation, DTO-casting and other modification steps inside the extractor.
-
-A good use-case for this would be a "Contact List" extractor, where you have the following requirements:
-
-- You need to extract a list of people from a document
-- Each item needds to include a valid email, a name and optionally a phone number and job title.
-- At the end, the data should be turned into a "Contact" DTO Collection
-- We need to validate each phone number with our own internal business logic (eg: look them up in our internal CRM,
-  perform an API call to check the white-pages, or cross-reference a CSV file, whatever)
-
-The Extractor package provides a consistent, wel thought out and structured way to define and house this logic.
-
-## Creating Extractors
-
-### Basic extractor
+Here is an example of extracting information from a CV, note that providing a description to guide the AI model is
+supported, as well as nested items (which is useful for lists of sub-items, like work history, line items, comments on a
+product etc )
 
 ```php
+$sample = Text::pdf(file_get_contents(__DIR__.'/../samples/helge-cv.pdf'));
+
+$data = Extractor::fields($sample,
+    fields: [
+        'name' => 'the name of the candidate',
+        'email',
+        'certifications' => 'list of certifications, if any',
+        'workHistory' => [
+            'companyName',
+            'from' => 'Y-m-d if available, Year only if not, null if missing',
+            'to' => 'Y-m-d if available, Year only if not, null if missing',
+            'text',
+        ],
+    ],
+    model: Engine::GPT_3_TURBO_1106,
+);
 ```
 
-### Adding Validation
+## Creating Custom Extractors
+
+Custom extractors in Extractor allow for tailored data extraction to meet specific needs. Here's how you can create and
+use a custom extractor, using the example of a Job Posting Extractor.
+
+### Implementing a Custom Extractor
+
+Create a new class for your custom extractor by extending the `Extractor` class. In this example, we'll create
+a `JobPostingExtractor` to extract key information from job postings:
 
 ```php
 <?php
 
-namespace HelgeSverre\Extractor\Extraction\Builtins;
+namespace App\Extractors;
+
+use HelgeSverre\Extractor\Extraction\Extractor;use HelgeSverre\Extractor\Text\TextContent;
+
+class JobPostingExtractor extends Extractor
+{
+    public function prompt(string|TextContent $input): string
+    {
+        $outputKey = $this->expectedOutputKey();
+
+        return "Extract the following fields from the job posting below:"
+            . "\n- jobTitle: The title or designation of the job."
+            . "\n- companyName: The name of the company or organization posting the job."
+            . "\n- location: The geographical location or workplace where the job is based."
+            . "\n- jobType: The nature of employment (e.g., Full-time, Part-time, Contract)."
+            . "\n- description: A brief summary or detailed description of the job."
+            . "\n- applicationDeadline: The closing date for applications, if specified."
+            . "\n\nThe output should be a JSON object under the key '{$outputKey}'."
+            . "\n\nINPUT STARTS HERE\n\n$input\n\nOUTPUT IN JSON:\n";
+    }
+
+    protected function expectedOutputKey(): string
+    {
+        return 'extractedData'; // Key under which the output will be structured.
+    }
+}
+```
+
+### Registering the Custom Extractor
+
+After defining your custom extractor, register it with the main Extractor class using the `extend` method:
+
+```php
+use HelgeSverre\Extractor\Extractor;
+
+Extractor::extend("job-posting", fn() => new JobPostingExtractor());
+```
+
+### Using the Custom Extractor
+
+Once registered, you can use your custom extractor just like the built-in ones. Here's an example of how to use
+the `JobPostingExtractor`:
+
+```php
+use HelgeSverre\Extractor\Facades\Text;
+use HelgeSverre\Extractor\Extractor;
+
+$jobPostingContent = Text::web("https://www.finn.no/job/fulltime/ad.html?finnkode=329443482");
+
+$extractedData = Extractor::extract('job-posting', $jobPostingContent);
+// Or you can specify the class-string instead
+// ex: Extractor::extract(JobPostingExtractor::class, $jobPostingContent);
+
+// $extractedData now contains structured information from the job posting
+```
+
+With the `JobPostingExtractor`, you can efficiently parse and extract key information from job postings, structuring it
+in a way that's easy to manage and use within your Laravel application.
+
+### Adding Validation to the Job Posting Extractor
+
+To ensure the integrity of the extracted data, you can add validation rules to your Job Posting Extractor. This is done
+by using the `HasValidation` trait and defining validation rules in the `rules` method:
+
+```php
+<?php
+
+namespace App\Extractors;
 
 use HelgeSverre\Extractor\Extraction\Concerns\HasValidation;
 use HelgeSverre\Extractor\Extraction\Extractor;
 
-class Contacts extends Extractor
+class JobPostingExtractor extends Extractor
 {
     use HasValidation;
 
     public function rules(): array
     {
         return [
-            '*.name' => ['required', 'string'],
-            '*.title' => ['required', 'string'],
-            '*.email' => ['required', 'email'],
-            '*.phone' => ['required'],
+            'jobTitle' => ['required', 'string'],
+            'companyName' => ['required', 'string'],
+            'location' => ['required', 'string'],
+            'jobType' => ['required', 'string'],
+            'salary' => ['required', 'numeric'],
+            'description' => ['required', 'string'],
+            'applicationDeadline' => ['required', 'date']
         ];
     }
-
 }
-
 ```
 
-### Extracting data into a DTO
+This will ensure that each key field in the job posting data meets the specified criteria, enhancing the reliability of
+your data extraction.
 
-Extractor integrates with spatie/data to cast the extracted data into a DTO of your choosing, add the `HasDto` trait to
-your Extractor, and return the class-string from the `dataClass` method.
+### Extracting Data into a DTO
 
-If you are extracting a collection, add the  `isCollection` method and have it return `true`, this will
-call `YourDato::collection()` on the extracted data.
+Extractor can integrate with `spatie/data` to cast the extracted data into a Data Transfer Object (DTO) of your
+choosing. To do this, add the `HasDto` trait to your extractor and specify the DTO class in the `dataClass` method:
 
 ```php
 <?php
 
-namespace HelgeSverre\Extractor\Extraction\Builtins;
+namespace App\Extractors;
 
-use HelgeSverre\Extractor\ContactDto;
+use DateTime;
+use App\Extractors\JobPostingDto;
 use HelgeSverre\Extractor\Extraction\Concerns\HasDto;
 use HelgeSverre\Extractor\Extraction\Extractor;
 use Spatie\LaravelData\Data;
 
-class ContactDto extends Data
+class JobPostingDto extends Data
 {
     public function __construct(
-        public string $name,
-        public string $title,
-        public string $phone,
-        public string $email,
+        public string $jobTitle,
+        public string $companyName,
+        public string $location,
+        public string $jobType,
+        public int|float $salary,
+        public string $description,
+        public DateTime $applicationDeadline
     ) {
     }
 }
 
-class Contacts extends Extractor
+class JobPostingExtractor extends Extractor
 {
     use HasDto;
 
     public function dataClass(): string
     {
-        return ContactDto::class;
+        return JobPostingDto::class;
     }
 
     public function isCollection(): bool
     {
-        return true;
+        return false; 
     }
 }
-
 ```
 
-### Making your Extractors configurable
+## All Parameters and Their Functions
 
-The extractor class takes a config array in the constructor, this config array is avaialble on the extractor instance
-and is both injected into the prompt as a variable, and can also be accessed from any method on the extractot instance (
-duh).
+**`$maxTokens` (int)**
+**`$temperature` (float)**
 
-This is useful for cases where you have a farily generic prompt where some specifics like a desired date format, list of
-fields or additional context can be injected to make the extractor reusable in many different scenarios.
-
-Here is an example using a fairly naive "contact list" extractor where we can configure the fields we want by providing
-them
-
-```php
-Engine::extend("contact-list", fn() => ContactListExtractor([
-    "fields" = [
-        "name",
-        "phone",
-        "email",
-    ]
-));
-```
-
-Then we can use that configuration inside the prompt like so:
-
-```blade
-Extract the following fields from the document below:
-
-@foreach($config["fields"] as $field)
-- {{ $field }}
-@endforeach
-
-DOCUMENT:
-
-{{ $input }}
-
-OUTPUT AS JSON:
-```
-
-Or you could use it to specify additional context like this:
-
-```php
-Engine::extend("dateExtractor", fn() => new  DateExtractor([
-    "format" => "Y-m-d"
-]);
-```
-
-Then we can use that configuration inside the prompt like so:
-
-```blade
-Given a text snippet, extract any mentioned date, adhering to a specified format. 
-
-SNIPPET:
-"The event is scheduled for 23/10/2023 at the city park."
-
-DATE FORMAT:  
-"{{ $config["format"] }}"
-
-Output:
-```
-
-You may also override or set any config when calling the extractor, which is more flexible as it allows you to pass in
-dynamic data as needed.
-
-```php
-Extractor::extend("contacts", fn() => Extractors\Payslip::class);
-Extractor::extract(
-    extractor: "contacts", 
-    input: Text::web("https://example.com/contact-us"),
-    config: [
-        "fields" => ["name", "email"],
-        "additionalContext" => "Only extract contact details for employees, not generic contact@, noreply@ or email@ addresses"
-        "domain" => "example.com"
-    ]
-]);
-```
+With Extractor, you can seamlessly integrate AI-powered data extraction into your Laravel applications, enhancing
+efficiency and unlocking new possibilities for data handling and analysis.
 
 Use your creativity, I'm sure you will discover vastly more interesting use cases than this contrived "contact list"
 example, the contact list example is used because it is fairly straight forward to understand and makes for a
 beginner-friendly use-case.
 
-### Registering Custom Extractors
-
-When you have made your own Extractor class, you want to register it with the main Extractor class, this is done by
-calling the `extend()` method.
-
-This method takes two arguments: the extractor name (a string) and a closure that returns the extractor class.
-
-Here's an example of how to register custom extractors:
-
-```php
-
-
-// Register using closure
-Extractor::extend("receipt", fn() => Extractors\Receipt::class);
-
-// Register using Instance
-Extractor::extend("rundown", fn() => new Extractors\Rundown(["columns" => ["#", "time", "notes", "sound", "presentation"]]));
-```
-
 ## All Parameters and Their Functions
 
-**`$text` (TextContent|string)**
+**`$input` (TextContent|string)**
 
-The input text or data that needs to be processed. It accepts either a `TextContent` object or a
-string.
+The input text or data that needs to be processed. It accepts either a `TextContent` object or a string.
 
 **`$model` (Model)**
 
 This parameter specifies the OpenAI model used for the extraction process.
 
-It accepts a `Model` enum value. The default model is `Model::TURBO_INSTRUCT`. Different models have different
-speed/accuracy characteristics.
+It accepts a `Model` enum value. Different models have different speed/accuracy characteristics and use cases.
 
 Available Models:
 
-- `Model::TURBO_INSTRUCT` – Uses the `gpt-3.5-turbo-instruct` model, Fastest with 7/10 accuracy.
-- `Model::TURBO_16K` – Uses the `gpt-3.5-turbo-16k` model, Fast with 8/10 accuracy, accepts longer input.
-- `Model::TURBO` – Uses the `gpt-3.5-turbo` model, Same as TURBO_16K, but accepts shorter input.
-- `Model::GPT4` – Uses the `gpt-4` model, Slower but with 9.5/10 accuracy.
-- `Model::GPT4_32K` – Uses the `gpt-4-32k` model, Same as GPT4, but accepts longer input.
+| Model Identifier               | Model                    | Note                                                                                                                                                                                           |
+|--------------------------------|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Engine::GPT_4_1106_PREVIEW`   | 'gpt-4-1106-preview'     | GPT-4 Turbo, featuring improved instruction following, JSON mode, reproducible outputs, parallel function calling. Maximum 4,096 output tokens. Preview model, not yet for production traffic. |
+| `Engine::GPT_3_TURBO_1106`     | 'gpt-3.5-turbo-1106'     | Updated GPT-3.5 Turbo, with improvements similar to GPT-4 Turbo. Returns up to 4,096 output tokens.                                                                                            |
+| `Engine::GPT_4`                | 'gpt-4'                  | Large multimodal model, capable of solving complex problems with greater accuracy. Suited for both chat and traditional completions tasks.                                                     |
+| `Engine::GPT4_32K`             | 'gpt-4-32k'              | Extended version of GPT-4 with a larger context window of 32,768 tokens.                                                                                                                       |
+| `Engine::GPT_3_TURBO_INSTRUCT` | 'gpt-3.5-turbo-instruct' | Similar to `text-davinci-003`, optimized for legacy Completions endpoint, not for Chat Completions.                                                                                            |
+| `Engine::GPT_3_TURBO_16K`      | 'gpt-3.5-turbo-16k'      | Extended version of GPT-3.5 Turbo, supporting a larger context window of 16,385 tokens.                                                                                                        |
+| `Engine::GPT_3_TURBO`          | 'gpt-3.5-turbo'          | Optimized for chat using the Chat Completions API, suitable for traditional completion tasks.                                                                                                  |
+| `Engine::TEXT_DAVINCI_003`     | 'text-davinci-003'       | Legacy model, better quality and consistency for language tasks. To be deprecated on Jan 4, 2024.                                                                                              |
+| `Engine::TEXT_DAVINCI_002`     | 'text-davinci-002'       | Similar to `text-davinci-003` but trained with supervised fine-tuning. To be deprecated on Jan 4, 2024.                                                                                        |
 
 **`$maxTokens` (int)**
 
@@ -333,3 +370,9 @@ Controls the randomness/creativity of the model's output.
 
 A higher value (e.g., 0.8) makes the output more random, which is usually not desired in this context. A recommended
 value is 0.1 or 0.2; anything over 0.5 tends to be less useful. The default is `0.1`.
+
+
+
+## License
+
+This package is licensed under the MIT License. For more details, refer to the [License File](LICENSE.md).
