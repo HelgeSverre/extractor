@@ -208,8 +208,9 @@ class JobPostingExtractor extends Extractor
 }
 ```
 
-
-**Note**: Adding an instruction on which `$outputKey` key to nest the data under is recommended, as the JsonMode response from OpenAI end to want to put everything under a root key, by overriding the   `expectedOutputKey()` method, it will tell the base Extractor class which key to pull the data from.  
+**Note**: Adding an instruction on which `$outputKey` key to nest the data under is recommended, as the JsonMode
+response from OpenAI end to want to put everything under a root key, by overriding the   `expectedOutputKey()` method,
+it will tell the base Extractor class which key to pull the data from.
 
 ### Registering the Custom Extractor
 
@@ -333,7 +334,8 @@ The input text or data that needs to be processed. It accepts either a `TextCont
 
 This parameter specifies the OpenAI model used for the extraction process.
 
-It accepts a `Model` enum value. Different models have different speed/accuracy characteristics and use cases.
+It accepts a `string` value. Different models have different speed/accuracy characteristics and use cases, for
+convenience, most of the accepted models are provided as constants on the `Engine` class.
 
 Available Models:
 
