@@ -17,7 +17,7 @@ it('can extract contact list from text sample with turbo instruct model', functi
 it('can extract contact list from text sample with gpt4 json mode', function () {
     $sample = file_get_contents(__DIR__.'/../samples/contacts.txt');
     $data = Extractor::extract(Contacts::class, $sample, [
-        'model' => Engine::GPT4_1106_PREVIEW,
+        'model' => Engine::GPT_4_1106_PREVIEW,
     ]);
 
     dump($data->toArray());

@@ -9,7 +9,7 @@ it('can extract contacts from a website with a class-string extractor', function
     \OpenAI\Laravel\Facades\OpenAI::fake();
     $text = Text::web('https://crescat.io/contact/');
     /** @var \HelgeSverre\Extractor\ContactDto $data */
-    $data = Extractor::extract(Contacts::class, $text, model: Engine::GPT4_1106_PREVIEW);
+    $data = Extractor::extract(Contacts::class, $text, model: Engine::GPT_4_1106_PREVIEW);
     dump($data->toArray());
 });
 

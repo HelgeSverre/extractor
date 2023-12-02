@@ -30,9 +30,11 @@ trait DecodesResponse
         });
 
         $this->registerProcessor(function ($response): mixed {
+
             $decoded = json_decode($response, true);
 
             if ($decoded === null && $this->throwsOnInvalidJsonResponse()) {
+                // TODO: Attempt recovery by looking between first/last { and }
                 throw new InvalidJsonReturnedError("Invalid JSON returned:\n$response");
             }
 

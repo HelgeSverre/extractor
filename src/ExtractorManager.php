@@ -3,7 +3,7 @@
 namespace HelgeSverre\Extractor;
 
 use Exception;
-use HelgeSverre\Extractor\Extraction\AutoExtractor;
+use HelgeSverre\Extractor\Extraction\Builtins\Fields;
 use HelgeSverre\Extractor\Extraction\Extractor;
 use HelgeSverre\Extractor\Text\TextContent;
 
@@ -47,10 +47,7 @@ class ExtractorManager
         );
     }
 
-    /**
-     * @throws Exception
-     */
-    public function auto(
+    public function fields(
         TextContent|string $input,
         array $fields,
         array $config = null,
@@ -58,7 +55,7 @@ class ExtractorManager
         int $maxTokens = 2000,
         float $temperature = 0.1,
     ): mixed {
-        $extractor = $this->resolveExtractor(AutoExtractor::class);
+        $extractor = $this->resolveExtractor(Fields::class);
 
         if ($config) {
             $extractor->mergeConfig($config);

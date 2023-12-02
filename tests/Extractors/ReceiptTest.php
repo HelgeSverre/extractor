@@ -10,7 +10,7 @@ it('can extract contact list from text sample with gpt4 json mode', function () 
     $sample = Text::pdf(file_get_contents(__DIR__.'/../samples/electronics.pdf'));
 
     $data = Extractor::extract(Receipt::class, $sample, [
-        'model' => Engine::GPT4_1106_PREVIEW,
+        'model' => Engine::GPT_4_1106_PREVIEW,
     ]);
 
     dump($data);

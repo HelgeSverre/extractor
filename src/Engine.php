@@ -11,7 +11,7 @@ use OpenAI\Responses\Completions\CreateResponse as CompletionResponse;
 class Engine
 {
     // New
-    const GPT4_1106_PREVIEW = 'gpt-4-1106-preview';
+    const GPT_4_1106_PREVIEW = 'gpt-4-1106-preview';
 
     const GPT_3_TURBO_1106 = 'gpt-3.5-turbo-1106';
 

@@ -63,9 +63,14 @@ abstract class Extractor
         return $this;
     }
 
+    public function prepareInput(array $input): array
+    {
+        return $input;
+    }
+
     public function prompt(string|TextContent $input): string
     {
-        return $this->view(array_merge(['input' => $input], $this->config));
+        return $this->view($this->prepareInput(array_merge(['input' => $input], $this->config)));
     }
 
     public function view($input): View
