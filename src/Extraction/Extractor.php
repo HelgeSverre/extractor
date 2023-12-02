@@ -23,36 +23,16 @@ abstract class Extractor
         $this->boot();
     }
 
-    public function config($key, $default = null)
-    {
-        return Arr::get($this->config, $key, $default);
-    }
-
-    /**
-     * @expectedDeprecation
-     *
-     * @todo remove this
-     */
     public function model(): ?string
     {
         return $this->config('model');
     }
 
-    /**
-     * @expectedDeprecation
-     *
-     * @todo remove this
-     */
     public function maxTokens(): ?int
     {
         return $this->config('max_tokens');
     }
 
-    /**
-     * @expectedDeprecation
-     *
-     * @todo remove this
-     */
     public function temperature(): ?float
     {
         return $this->config('temperature');
@@ -90,7 +70,12 @@ abstract class Extractor
 
     public function view($input): View
     {
-        return view("extractor::{$this->name()}", $input);
+        return view($this->viewName(), $input);
+    }
+
+    public function viewName(): string
+    {
+        return "extractor::{$this->name()}";
     }
 
     public function name(): string
@@ -109,7 +94,6 @@ abstract class Extractor
 
     public function process($response): mixed
     {
-
         foreach (Arr::pluck($this->processors, 'callback') as $processor) {
             $response = $processor($response, $this);
         }
@@ -120,6 +104,18 @@ abstract class Extractor
     public function mergeConfig(array $config): self
     {
         $this->config = array_merge($this->config, $config);
+
+        return $this;
+    }
+
+    public function config($key, $default = null)
+    {
+        return Arr::get($this->config, $key, $default);
+    }
+
+    public function addConfig(string $key, $value): self
+    {
+        $this->config[$key] = $value;
 
         return $this;
     }

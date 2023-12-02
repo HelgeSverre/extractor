@@ -18,11 +18,17 @@ trait DecodesResponse
 
     public function expectedOutputKey(): string
     {
-        return 'results';
+        return 'output';
     }
 
     public function bootDecodesResponse(): void
     {
+        $this->registerPreprocessor(function ($input): mixed {
+            $this->addConfig('outputKey', $this->expectedOutputKey());
+
+            return $input;
+        });
+
         $this->registerProcessor(function ($response): mixed {
             $decoded = json_decode($response, true);
 

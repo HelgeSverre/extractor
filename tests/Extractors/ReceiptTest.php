@@ -23,5 +23,5 @@ it('can extract contact list from text sample with gpt 3.5 json mode', function 
         'model' => Engine::GPT_3_TURBO_1106,
     ]);
 
-    dump($data->toArray());
+    dump($data);
 });

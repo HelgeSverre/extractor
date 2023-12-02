@@ -41,13 +41,15 @@ class Engine
     ): mixed {
         $preprocessed = $extractor->preprocess($input);
 
+        $prompt = $extractor->prompt($preprocessed);
+
         $response = match (true) {
             // Legacy text completion models
             $this->isCompletionModel($model) => OpenAI::completions()->create([
                 'model' => $model,
                 'max_tokens' => $maxTokens,
                 'temperature' => $temperature,
-                'prompt' => $extractor->prompt($preprocessed),
+                'prompt' => $prompt,
             ]),
 
             // New json mode models.
@@ -58,7 +60,7 @@ class Engine
                 'response_format' => ['type' => 'json_object'],
                 'messages' => [[
                     'role' => 'user',
-                    'content' => $extractor->prompt($preprocessed),
+                    'content' => $prompt,
                 ]],
             ]),
 
@@ -69,7 +71,7 @@ class Engine
                 'temperature' => $temperature,
                 'messages' => [[
                     'role' => 'user',
-                    'content' => $extractor->prompt($preprocessed),
+                    'content' => $prompt,
                 ]],
             ]),
         };

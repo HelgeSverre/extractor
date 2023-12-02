@@ -15,17 +15,22 @@ class Receipt extends Extractor
             'orderRef' => ['nullable', 'string'],
             'date' => ['required', 'date'],
             'taxAmount' => ['nullable', 'numeric'],
-            'totalAmount' => ['nullable', 'numeric'],
+            'totalAmount' => ['required', 'numeric'],
             'currency' => ['nullable', 'string', 'size:3'],
 
             'merchant.name' => ['required', 'string'],
             'merchant.vatId' => ['nullable', 'string'],
-            'merchant.address' => ['required', 'string'],
+            'merchant.address' => ['nullable', 'string'],
 
             'lineItems.*.text' => ['required', 'string'],
-            'lineItems.*.sku' => ['nullable', 'string'],
-            'lineItems.*.qty' => ['required', 'numeric'],
-            'lineItems.*.price' => ['required', 'numeric'],
+            'lineItems.*.sku' => ['nullable'],
+            'lineItems.*.qty' => ['nullable', 'numeric'],
+            'lineItems.*.price' => ['nullable', 'numeric'],
         ];
+    }
+
+    public function throwsOnValidationFailure()
+    {
+        return true;
     }
 }

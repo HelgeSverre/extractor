@@ -3,12 +3,18 @@
 namespace HelgeSverre\Extractor;
 
 use Exception;
+use HelgeSverre\Extractor\Extraction\AutoExtractor;
 use HelgeSverre\Extractor\Extraction\Extractor;
 use HelgeSverre\Extractor\Text\TextContent;
 
 class ExtractorManager
 {
     protected array $extractors = [];
+
+    public function __construct(protected Engine $engine)
+    {
+
+    }
 
     public function extend(string $name, callable $callback): void
     {
@@ -32,9 +38,35 @@ class ExtractorManager
             $extractor->mergeConfig($config);
         }
 
-        $engine = new Engine();
+        return $this->engine->run(
+            extractor: $extractor,
+            input: $input,
+            model: $model ?? $extractor->model(),
+            maxTokens: $maxTokens ?? $extractor->maxTokens(),
+            temperature: $temperature ?? $extractor->temperature(),
+        );
+    }
 
-        return $engine->run(
+    /**
+     * @throws Exception
+     */
+    public function auto(
+        TextContent|string $input,
+        array $fields,
+        array $config = null,
+        string $model = null,
+        int $maxTokens = 2000,
+        float $temperature = 0.1,
+    ): mixed {
+        $extractor = $this->resolveExtractor(AutoExtractor::class);
+
+        if ($config) {
+            $extractor->mergeConfig($config);
+        }
+
+        $extractor->addConfig('fields', $fields);
+
+        return $this->engine->run(
             extractor: $extractor,
             input: $input,
             model: $model ?? $extractor->model(),
