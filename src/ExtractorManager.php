@@ -3,6 +3,7 @@
 namespace HelgeSverre\Extractor;
 
 use Exception;
+use HelgeSverre\Extractor\Drivers\OpenAIDriver;
 use HelgeSverre\Extractor\Extraction\Builtins\Fields;
 use HelgeSverre\Extractor\Extraction\Builtins\Simple;
 use HelgeSverre\Extractor\Extraction\Extractor;
@@ -12,7 +13,7 @@ class ExtractorManager
 {
     protected array $extractors = [];
 
-    public function __construct(protected Engine $engine)
+    public function __construct(protected OpenAIDriver $engine)
     {
 
     }

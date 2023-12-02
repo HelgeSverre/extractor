@@ -10,5 +10,7 @@ interface Engine
     public function run(
         Extractor $extractor,
         TextContent|string $input,
+        array $config = [],
+        ?string $model = null,
     ): mixed;
 }

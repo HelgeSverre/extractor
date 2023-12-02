@@ -1,14 +1,15 @@
 <?php
 
-namespace HelgeSverre\Extractor;
+namespace HelgeSverre\Extractor\Drivers;
 
+use HelgeSverre\Extractor\Contracts\Engine;
 use HelgeSverre\Extractor\Extraction\Extractor;
 use HelgeSverre\Extractor\Text\TextContent;
 use OpenAI\Laravel\Facades\OpenAI;
 use OpenAI\Responses\Chat\CreateResponse as ChatResponse;
 use OpenAI\Responses\Completions\CreateResponse as CompletionResponse;
 
-class Engine
+class OpenAIDriver implements Engine
 {
     // New
     const GPT_4_1106_PREVIEW = 'gpt-4-1106-preview';
@@ -33,12 +34,12 @@ class Engine
     const TEXT_DAVINCI_002 = 'text-davinci-002';
 
     public function run(
-        Extractor $extractor,
+        Extractor          $extractor,
         TextContent|string $input,
-        string $model,
-        int $maxTokens,
-        float $temperature,
-    ): mixed {
+        array              $config = [],
+        ?string            $model = null,
+    ): mixed
+    {
         $preprocessed = $extractor->preprocess($input);
 
         $prompt = $extractor->prompt($preprocessed);
@@ -47,16 +48,16 @@ class Engine
             // Legacy text completion models
             $this->isCompletionModel($model) => OpenAI::completions()->create([
                 'model' => $model,
-                'max_tokens' => $maxTokens,
-                'temperature' => $temperature,
+                'max_tokens' => $config["max_tokens"] ?? null,
+                'temperature' => $config["temperature"] ?? null,
                 'prompt' => $prompt,
             ]),
 
             // New json mode models.
             $this->supportsJsonMode($model) => OpenAI::chat()->create([
                 'model' => $model,
-                'max_tokens' => $maxTokens,
-                'temperature' => $temperature,
+                'max_tokens' => $config["max_tokens"] ?? null,
+                'temperature' => $config["temperature"] ?? null,
                 'response_format' => ['type' => 'json_object'],
                 'messages' => [[
                     'role' => 'user',
@@ -67,8 +68,8 @@ class Engine
             // Previous generation models
             default => OpenAI::chat()->create([
                 'model' => $model,
-                'max_tokens' => $maxTokens,
-                'temperature' => $temperature,
+                'max_tokens' => $config["max_tokens"] ?? null,
+                'temperature' => $config["temperature"] ?? null,
                 'messages' => [[
                     'role' => 'user',
                     'content' => $prompt,

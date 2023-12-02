@@ -1,6 +1,6 @@
 <?php
 
-use HelgeSverre\Extractor\Engine;
+use HelgeSverre\Extractor\Drivers\OpenAIDriver;
 use HelgeSverre\Extractor\Facades\Extractor;
 use HelgeSverre\Extractor\Facades\Text;
 
@@ -15,7 +15,7 @@ it('can extract simple fields using gpt 3.5 json mode', function () {
             'description',
             'tags',
         ],
-        model: Engine::GPT_4_1106_PREVIEW,
+        model: OpenAIDriver::GPT_4_1106_PREVIEW,
     );
 
     dump($data);
@@ -32,7 +32,7 @@ it('can extract fields with descriptions using gpt 3.5 json mode', function () {
             'eventName' => 'the name of the event',
             'endsAt' => 'When the event should be finished, in Y-m-d H:i:s format',
         ],
-        model: Engine::GPT_3_TURBO_1106,
+        model: OpenAIDriver::GPT_3_TURBO_1106,
     );
 
     dump($data);
@@ -53,7 +53,7 @@ it('can extract work history from a PDF CV using gpt 3.5 json mode', function ()
                 'text',
             ],
         ],
-        model: Engine::GPT_3_TURBO_1106,
+        model: OpenAIDriver::GPT_3_TURBO_1106,
     );
 
     dump($data);
@@ -74,7 +74,7 @@ it('can scrape car data from finn.no car listing with field extraction using gpt
             'sellerAddress',
             'finnCode',
         ],
-        model: Engine::GPT_3_TURBO_1106,
+        model: OpenAIDriver::GPT_3_TURBO_1106,
     );
 
     dump($data);
