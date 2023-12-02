@@ -20,10 +20,9 @@ trait HasDto
 
     public function bootHasDto(): void
     {
-        $this->registerProcessor(function ($response): mixed {
 
+        $this->registerProcessor(function ($response): mixed {
             $dataClass = match (true) {
-                /** @psalm-suppress UndefinedThisPropertyFetch */
                 property_exists($this, 'dataClass') => $this->dataClass,
                 method_exists($this, 'dataClass') => $this->dataClass(),
                 default => null,

@@ -20,8 +20,8 @@ class ExtractorServiceProvider extends PackageServiceProvider
         $this->loadViewsFrom($this->package->basePath('/../resources/prompts'), 'extractor');
 
         $this->publishes([
-            $this->package->basePath('/../resources/prompts') => base_path("resources/views/vendor/{$this->packageView($this->package->viewNamespace)}"),
-        ], "{$this->packageView($this->package->viewNamespace)}-prompts");
+            $this->package->basePath('/../resources/prompts') => base_path('resources/views/vendor/extractor'),
+        ], 'extractor-prompts');
 
         $this->app->singleton(Factory::class, fn ($app) => new Factory($app));
 

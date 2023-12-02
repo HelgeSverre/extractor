@@ -6,8 +6,6 @@ The data points you are required to extract include:
 - phone
 - email
 
-The output should be a flat list of JSON objects.
+The output should be an array of JSON objects under the key of "results".
 
 {{ $input }}
-
-OUTPUT IN JSON

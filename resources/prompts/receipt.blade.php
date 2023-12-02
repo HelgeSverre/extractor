@@ -10,6 +10,6 @@ You need to carry out data extraction from a given receipt and transform it into
 
 In a situation where there are no suitable values for any of the above information, kindly set the value as null in your response. Remember, your final output should adhere to the neat, hierarchical structure of JSON.
 
-{{ $input }}
+The output should be a JSON object under the key of "result".
 
-OUTPUT IN JSON
+{{ $input }}

@@ -2,14 +2,18 @@
 
 namespace HelgeSverre\Extractor\Extraction;
 
-use HelgeSverre\Extractor\Exceptions\InvalidJsonReturnedError;
+use HelgeSverre\Extractor\Extraction\Concerns\DecodesResponse;
 use HelgeSverre\Extractor\Text\TextContent;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Support\Traits\Conditionable;
 
 abstract class Extractor
 {
+    use Conditionable;
+    use DecodesResponse;
+
     protected array $preprocessors = [];
 
     protected array $processors = [];
@@ -19,19 +23,39 @@ abstract class Extractor
         $this->boot();
     }
 
+    public function config($key, $default = null)
+    {
+        return Arr::get($this->config, $key, $default);
+    }
+
+    /**
+     * @expectedDeprecation
+     *
+     * @todo remove this
+     */
     public function model(): ?string
     {
-        return Arr::get($this->config, 'model');
+        return $this->config('model');
     }
 
+    /**
+     * @expectedDeprecation
+     *
+     * @todo remove this
+     */
     public function maxTokens(): ?int
     {
-        return Arr::get($this->config, 'max_tokens');
+        return $this->config('max_tokens');
     }
 
+    /**
+     * @expectedDeprecation
+     *
+     * @todo remove this
+     */
     public function temperature(): ?float
     {
-        return Arr::get($this->config, 'temperature');
+        return $this->config('temperature');
     }
 
     protected function boot(): void
@@ -59,11 +83,6 @@ abstract class Extractor
         return $this;
     }
 
-    public function name(): string
-    {
-        return Str::slug(class_basename(get_class($this)));
-    }
-
     public function prompt(string|TextContent $input): string
     {
         return $this->view(array_merge(['input' => $input], $this->config));
@@ -72,6 +91,11 @@ abstract class Extractor
     public function view($input): View
     {
         return view("extractor::{$this->name()}", $input);
+    }
+
+    public function name(): string
+    {
+        return Str::slug(class_basename(get_class($this)));
     }
 
     public function preprocess(TextContent|string $input): string
@@ -83,25 +107,8 @@ abstract class Extractor
         return $input;
     }
 
-    public function throwsOnInvalidJsonResponse(): bool
-    {
-        return true;
-    }
-
-    public function decodeResponse($response)
-    {
-        $decoded = json_decode($response, true);
-
-        if ($decoded === null && $this->throwsOnInvalidJsonResponse()) {
-            throw new InvalidJsonReturnedError("Invalid JSON returned:\n$response");
-        }
-
-        return $decoded;
-    }
-
     public function process($response): mixed
     {
-        $response = $this->decodeResponse($response);
 
         foreach (Arr::pluck($this->processors, 'callback') as $processor) {
             $response = $processor($response, $this);

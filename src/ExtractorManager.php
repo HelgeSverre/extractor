@@ -3,7 +3,6 @@
 namespace HelgeSverre\Extractor;
 
 use Exception;
-use HelgeSverre\Extractor\Enums\Model;
 use HelgeSverre\Extractor\Extraction\Extractor;
 use HelgeSverre\Extractor\Text\TextContent;
 
@@ -22,10 +21,10 @@ class ExtractorManager
     public function extract(
         string|Extractor $nameOrClass,
         TextContent|string $input,
-        Model $model = null,
-        int $maxTokens = null,
-        float $temperature = null,
         array $config = null,
+        string $model = null,
+        int $maxTokens = 2000,
+        float $temperature = 0.1,
     ): mixed {
         $extractor = $this->resolveExtractor($nameOrClass);
 
@@ -33,13 +32,14 @@ class ExtractorManager
             $extractor->mergeConfig($config);
         }
 
-        $engine = new Engine($extractor);
+        $engine = new Engine();
 
         return $engine->run(
+            extractor: $extractor,
             input: $input,
-            model: $model,
-            maxTokens: $maxTokens,
-            temperature: $temperature
+            model: $model ?? $extractor->model(),
+            maxTokens: $maxTokens ?? $extractor->maxTokens(),
+            temperature: $temperature ?? $extractor->temperature(),
         );
     }
 
