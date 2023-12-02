@@ -1,6 +1,6 @@
-<p align="center"><img src=".github/header.webp"></p>
+<p align="center"><img src=".github/header.png"></p>
 
-# Extractor: AI-Powered Data Extraction for your Laravel application.
+# Extractor: AI-Powered Data Extraction Library for Laravel.
 
 ![Latest Version on Packagist](https://img.shields.io/packagist/v/helgesverre/extractor.svg?style=flat-square)
 ![Total Downloads](https://img.shields.io/packagist/dt/helgesverre/extractor.svg?style=flat-square)
