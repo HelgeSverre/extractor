@@ -132,8 +132,8 @@ methods for each:
 
 | Example                                                          | Extractor | Description                                                                                                         |
 |------------------------------------------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------|
-| `Extractor::extract(Contacts::class, $text);`                    | Receipt   | Extracts structured data from receipts and invoices.                                                                |
-| `Extractor::extract(Receipt::class, $text);`                     | Recipe    | Extracts ingredients and cooking instructions from recipes.                                                         |
+| `Extractor::extract(Contacts::class, $text);`                    | Contacts  | Extracts a list of contacts (name, title, email, phone).                                                            |
+| `Extractor::extract(Receipt::class, $text);`                     | Receipt   | Extracts common Receipt data, See [receipt-scanner](https://github.com/HelgeSverre/receipt-scanner) for details.    |
 | `Extractor::fields($text, fields: ["name","address", "phone"]);` | Fields    | Extracts arbitrary fields provided as an array of output key, and optional description, also supports nested fields |
 
 These extractors are provided out of the box and offer a convenient way to extract specific types of structured data
@@ -370,8 +370,6 @@ Controls the randomness/creativity of the model's output.
 
 A higher value (e.g., 0.8) makes the output more random, which is usually not desired in this context. A recommended
 value is 0.1 or 0.2; anything over 0.5 tends to be less useful. The default is `0.1`.
-
-
 
 ## License
 
