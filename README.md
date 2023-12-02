@@ -201,12 +201,15 @@ class JobPostingExtractor extends Extractor
             . "\n\nINPUT STARTS HERE\n\n$input\n\nOUTPUT IN JSON:\n";
     }
 
-    protected function expectedOutputKey(): string
+    public function expectedOutputKey(): string
     {
-        return 'extractedData'; // Key under which the output will be structured.
+        return 'extractedData';
     }
 }
 ```
+
+
+**Note**: Adding an instruction on which `$outputKey` key to nest the data under is recommended, as the JsonMode response from OpenAI end to want to put everything under a root key, by overriding the   `expectedOutputKey()` method, it will tell the base Extractor class which key to pull the data from.  
 
 ### Registering the Custom Extractor
 
@@ -319,18 +322,6 @@ class JobPostingExtractor extends Extractor
     }
 }
 ```
-
-## All Parameters and Their Functions
-
-**`$maxTokens` (int)**
-**`$temperature` (float)**
-
-With Extractor, you can seamlessly integrate AI-powered data extraction into your Laravel applications, enhancing
-efficiency and unlocking new possibilities for data handling and analysis.
-
-Use your creativity, I'm sure you will discover vastly more interesting use cases than this contrived "contact list"
-example, the contact list example is used because it is fairly straight forward to understand and makes for a
-beginner-friendly use-case.
 
 ## All Parameters and Their Functions
 
