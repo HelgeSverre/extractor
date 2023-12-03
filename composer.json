@@ -89,10 +89,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "ExtractorServiceProvider"
+                "HelgeSverre\\Extractor\\ExtractorServiceProvider"
             ],
             "aliases": {
-                "Extractor": "Extractor",
+                "Extractor": "HelgeSverre\\Extractor\\Facades\\Extractor",
                 "Text": "HelgeSverre\\Extractor\\Facades\\Text"
             }
         }
