@@ -74,7 +74,7 @@ Since this package relies on the [OpenAI Laravel Package](https://github.com/ope
 publish their configuration and add the `OPENAI_API_KEY` to your `.env` file:
 
 ```shell
-php artisan openai:install
+php artisan vendor:publish --provider="OpenAI\Laravel\ServiceProvider"
 ```
 
 ```dotenv
