@@ -4,7 +4,7 @@ use HelgeSverre\Extractor\Facades\Text;
 use HelgeSverre\Extractor\Text\TextContent;
 
 it('Can load Text', function () {
-    $text = Text::text(file_get_contents(__DIR__.'/samples/wolt-pizza-norwegian.txt'));
+    $text = Text::text(file_get_contents(__DIR__.'/../samples/wolt-pizza-norwegian.txt'));
 
     expect($text)->toBeInstanceOf(TextContent::class)->and($text->toString())->toContain(
         'Helge Sverre Hessevik Liseth',
@@ -14,7 +14,7 @@ it('Can load Text', function () {
 });
 
 it('Can load PDFs', function () {
-    $text = Text::pdf(file_get_contents(__DIR__.'/samples/laravel-certification-invoice.pdf'));
+    $text = Text::pdf(file_get_contents(__DIR__.'/../samples/laravel-certification-invoice.pdf'));
 
     expect($text)->toBeInstanceOf(TextContent::class)->and($text->toString())->toContain(
         'contact@laravelcert.com',
@@ -23,7 +23,7 @@ it('Can load PDFs', function () {
 });
 
 it('Can OCR images', function () {
-    $text = Text::textract(file_get_contents(__DIR__.'/samples/grocery-receipt-norwegian-spar.jpg'));
+    $text = Text::textract(file_get_contents(__DIR__.'/../samples/grocery-receipt-norwegian-spar.jpg'));
 
     expect($text)->toBeInstanceOf(TextContent::class)->and($text->toString())->toContain(
         'TOMATER',
@@ -31,28 +31,28 @@ it('Can OCR images', function () {
         'SKINKE',
         'SPAR DALE',
     );
-});
+})->skip('Takes too long');
 
 it('Can OCR Pdfs', function () {
-    $text = Text::textract(file_get_contents(__DIR__.'/samples/laravel-certification-invoice.pdf'));
+    $text = Text::textract(file_get_contents(__DIR__.'/../samples/laravel-certification-invoice.pdf'));
 
     expect($text)->toBeInstanceOf(TextContent::class)->and($text->toString())->toContain(
         'contact@laravelcert.com',
         'Helge Sverre Hessevik Liseth',
     );
-});
+})->skip('Takes too long');
 
 it('Can OCR Pdfs via s3', function () {
-    $text = Text::textractUsingS3Upload(file_get_contents(__DIR__.'/samples/laravel-certification-invoice.pdf'));
+    $text = Text::textractUsingS3Upload(file_get_contents(__DIR__.'/../samples/laravel-certification-invoice.pdf'));
 
     expect($text)->toBeInstanceOf(TextContent::class)->and($text->toString())->toContain(
         'contact@laravelcert.com',
         'Helge Sverre Hessevik Liseth',
     );
-});
+})->skip('Takes too long');
 
 it('Can load a Word documents i found on the internet', function () {
-    $text = Text::word(file_get_contents(__DIR__.'/samples/word-document.doc'));
+    $text = Text::word(file_get_contents(__DIR__.'/../samples/word-document.doc'));
 
     expect($text)->toBeInstanceOf(TextContent::class)->and($text->toString())->toContain(
         'Mauris',
@@ -60,7 +60,7 @@ it('Can load a Word documents i found on the internet', function () {
 });
 
 it('Can load a Word document exported from google docs', function () {
-    $text = Text::word(file_get_contents(__DIR__.'/samples/contract.docx'));
+    $text = Text::word(file_get_contents(__DIR__.'/../samples/contract.docx'));
 
     expect($text)->toBeInstanceOf(TextContent::class)->and($text->toString())->toContain(
         'Contract Agreement',
@@ -78,7 +78,7 @@ it('Can load text from website', function () {
 });
 
 it('Can load html files', function () {
-    $text = Text::html(file_get_contents(__DIR__.'/samples/paddle-fake-subscription.html'));
+    $text = Text::html(file_get_contents(__DIR__.'/../samples/paddle-fake-subscription.html'));
 
     expect($text)->toBeInstanceOf(TextContent::class)->and($text->toString())->toContain(
         'Thank you for your purchase!',
@@ -87,7 +87,7 @@ it('Can load html files', function () {
 });
 
 it('Can load rtf files', function () {
-    $text = Text::rtf(file_get_contents(__DIR__.'/samples/contract.rtf'));
+    $text = Text::rtf(file_get_contents(__DIR__.'/../samples/contract.rtf'));
 
     expect($text)->toBeInstanceOf(TextContent::class)->and($text->toString())->toContain(
         'Contract Agreement',

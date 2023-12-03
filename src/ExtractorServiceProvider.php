@@ -16,7 +16,6 @@ class ExtractorServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
-
         $this->loadViewsFrom($this->package->basePath('/../resources/prompts'), 'extractor');
 
         $this->publishes([

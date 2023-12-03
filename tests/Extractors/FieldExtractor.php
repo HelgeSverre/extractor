@@ -18,7 +18,12 @@ it('can extract simple fields using gpt 3.5 json mode', function () {
         model: Engine::GPT_4_1106_PREVIEW,
     );
 
-    dump($data);
+    expect($data)->toBeArray()
+        ->and($data['minimumAge'])->toBe(20)
+        ->and($data['date'])->toBe('2023-12-01')
+        ->and(strtolower($data['eventName']))->toBe('oslo deathfest')
+        ->and($data['description'])->toBeString()
+        ->and($data['tags'])->toBeArray();
 });
 
 it('can extract fields with descriptions using gpt 3.5 json mode', function () {
@@ -35,7 +40,12 @@ it('can extract fields with descriptions using gpt 3.5 json mode', function () {
         model: Engine::GPT_3_TURBO_1106,
     );
 
-    dump($data);
+    expect($data)->toBeArray()
+        ->and($data['minimumAge'])->toBe(20)
+        ->and($data['date'])->toBe('2023-12-01')
+        ->and($data['doorsOpenAt'])->toBe('17:00')
+        ->and(strtolower($data['eventName']))->toBe('oslo deathfest')
+        ->and($data['endsAt'])->toBe('2023-12-01 02:00:00');
 });
 
 it('can extract work history from a PDF CV using gpt 3.5 json mode', function () {
@@ -56,11 +66,21 @@ it('can extract work history from a PDF CV using gpt 3.5 json mode', function ()
         model: Engine::GPT_3_TURBO_1106,
     );
 
-    dump($data);
+    expect($data)->toBeArray()
+        ->and($data['name'])->toBe('Helge Sverre')
+        ->and($data['email'])->toBe('helge.sverre@gmail.com')
+        ->and($data['certifications'])->toMatchArray([
+            'Laravel Certified Developer',
+            'AWS Certified Developer - Associate',
+            'Microsoft Specialist: Programming in C#',
+            'MCPS: Microsoft Certified Professional',
+            'Zend Certified PHP Engineer',
+        ])
+        ->and($data['workHistory'])->toHaveCount(7);
 });
 
 it('can scrape car data from finn.no car listing with field extraction using gpt 3.5 json mode', function () {
-    $sample = Text::web('https://www.finn.no/car/used/ad.html?finnkode=331004985');
+    $sample = Text::html(file_get_contents(__DIR__.'/../samples/car-classifed.html'));
 
     $data = Extractor::fields($sample,
         fields: [
@@ -77,5 +97,12 @@ it('can scrape car data from finn.no car listing with field extraction using gpt
         model: Engine::GPT_3_TURBO_1106,
     );
 
-    dump($data);
+    expect($data)->toBeArray()
+        ->and($data['carMake'])->toBe('Skoda')
+        ->and($data['carModel'])->toBe('Octavia')
+        ->and($data['milage'])->toBe(209000)
+        ->and($data['sellerName'])->toBe('HAAVELMOEN BRUKTBILSALG')
+        ->and($data['sellerPhone'])->toBe('41692829')
+        ->and($data['sellerAddress'])->toBe('Hengsrudveien, 3178 Våle')
+        ->and($data['finnCode'])->toBe('331004985');
 });
