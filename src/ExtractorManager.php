@@ -26,7 +26,7 @@ class ExtractorManager
         string|Extractor $nameOrClass,
         TextContent|string $input,
         array $config = null,
-        string $model = null,
+        string $model = 'gpt-3.5-turbo-1106',
         int $maxTokens = 2000,
         float $temperature = 0.1,
     ): mixed {
@@ -49,7 +49,7 @@ class ExtractorManager
         string $view,
         TextContent|string $input,
         array $config = null,
-        string $model = null,
+        string $model = 'gpt-3.5-turbo-1106',
         int $maxTokens = 2000,
         float $temperature = 0.1,
     ): mixed {
@@ -70,7 +70,7 @@ class ExtractorManager
         TextContent|string $input,
         array $fields,
         array $config = null,
-        string $model = null,
+        string $model = 'gpt-3.5-turbo-1106',
         int $maxTokens = 2000,
         float $temperature = 0.1,
     ): mixed {
