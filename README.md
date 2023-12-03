@@ -1,4 +1,4 @@
-<p align="center"><img src=".github/header.png"></p>
+<p align="center"><img src="art/header.png"></p>
 
 # Extractor: AI-Powered Data Extraction Library for Laravel.
 
@@ -11,9 +11,48 @@ Laravel application.
 ## Features
 
 - A convenient wrapper around OpenAI Chat and Completion endpoints.
-- Takes text as input and returns an array, or spatie/data in return,.
-- Supports multiple input formats such as Plain Text, PDF, Images, Word documents, and Web content.
+- Supports multiple input formats such as Plain Text, PDF, Rtf, Images, Word documents and Web content.
+- Includes a flexible Field Extractor that can extract any arbitrary data without writing custom logic.
+- Can return a regular array or a [Spatie/data](https://spatie.be/docs/laravel-data/v3/introduction) object.
 - Integrates with [Textract](https://aws.amazon.com/textract/) for OCR functionality.
+- Uses [JSON Mode](https://platform.openai.com/docs/guides/text-generation/json-mode) from the latest GPT-3.5 and GPT-4 models.
+
+## Example
+
+<p align="center"><img src="art/example.png"></p>
+
+<details>
+<summary>Example code</summary>
+
+```php
+<?php
+
+use HelgeSverre\Extractor\Facades\Extractor;
+use HelgeSverre\Extractor\Facades\Text;
+use Illuminate\Support\Facades\Storage;
+
+$image = Storage::get("restaurant_menu.png")
+
+// Extract text from images
+$textFromImage = Text::textract($image);
+
+// Extract structured data from plain text
+$menu = Extractor::fields($textFromImage,
+    fields: [
+        'restaurantName',
+        'phoneNumber',
+        'dishes' => [
+            'name' => 'name of the dish',
+            'description' => 'description of the dish',
+            'price' => 'price of the dish as a number',
+        ],
+    ],
+    model: "gpt-3.5-turbo-1106",
+    maxTokens: 4000,
+);
+```
+
+</details>
 
 ## Installation
 
@@ -29,73 +68,18 @@ Publish the configuration file:
 php artisan vendor:publish --tag="extractor-config"
 ```
 
-You can find all the configuration options in the configuration file.
+You can find all the configuration options in the [configuration file](/config/extractor.php).
 
 Since this package relies on the [OpenAI Laravel Package](https://github.com/openai-php/laravel), you also need to
-publish
-their configuration and add the `OPENAI_API_KEY` to your `.env` file:
+publish their configuration and add the `OPENAI_API_KEY` to your `.env` file:
+
+```shell
+php artisan openai:install
+```
 
 ```dotenv
 OPENAI_API_KEY="your-key-here"
 ```
-
-## OCR Configuration with AWS Textract
-
-To use AWS Textract for extracting text from large images and multi-page PDFs,
-the package needs to upload the file to S3 and pass the s3 object location along to the textract service.
-
-So you need to configure your AWS Credentials in the `config/extractor.php` file as follows:
-
-```dotenv
-TEXTRACT_KEY="your-aws-access-key"
-TEXTRACT_SECRET="your-aws-security"
-TEXTRACT_REGION="your-textract-region"
-
-# Can be omitted
-TEXTRACT_VERSION="2018-06-27"
-```
-
-You also need to configure a seperate Textract disk where the files will be stored,
-open your  `config/filesystems.php` configuration file and add the following:
-
-```php
-'textract' => [
-    'driver' => 's3',
-    'key' => env('TEXTRACT_KEY'),
-    'secret' => env('TEXTRACT_SECRET'),
-    'region' => env('TEXTRACT_REGION'),
-    'bucket' => env('TEXTRACT_BUCKET'),
-],
-```
-
-Ensure the `textract_disk` setting in `config/extractor.php` is the same as your disk name in
-the `filesystems.php`
-config, you can change it with the .env value `TEXTRACT_DISK`.
-
-```php
-return [
-    "textract_disk" => env("TEXTRACT_DISK")
-];
-```
-
-`.env`
-
-```dotenv
-TEXTRACT_DISK="uploads"
-```
-
-**Note**
-
-Textract is not available in all regions:
-
-> Q: In which AWS regions is Amazon Textract available?
-> Amazon Textract is currently available in the US East (Northern Virginia), US East (Ohio), US West (Oregon), US West (
-> N. California), AWS GovCloud (US-West), AWS GovCloud (US-East), Canada (Central), EU (Ireland), EU (London), EU (
-> Frankfurt), EU (Paris), Asia Pacific (Singapore), Asia Pacific (Sydney), Asia Pacific (Seoul), and Asia Pacific (
-> Mumbai)
-> Regions.
-
-See: https://aws.amazon.com/textract/faqs/
 
 ## Usage
 
@@ -323,6 +307,64 @@ class JobPostingExtractor extends Extractor
     }
 }
 ```
+
+## OCR Configuration with AWS Textract
+
+To use AWS Textract for extracting text from large images and multi-page PDFs,
+the package needs to upload the file to S3 and pass the s3 object location along to the textract service.
+
+So you need to configure your AWS Credentials in the `config/extractor.php` file as follows:
+
+```dotenv
+TEXTRACT_KEY="your-aws-access-key"
+TEXTRACT_SECRET="your-aws-security"
+TEXTRACT_REGION="your-textract-region"
+
+# Can be omitted
+TEXTRACT_VERSION="2018-06-27"
+```
+
+You also need to configure a seperate Textract disk where the files will be stored,
+open your  `config/filesystems.php` configuration file and add the following:
+
+```php
+'textract' => [
+    'driver' => 's3',
+    'key' => env('TEXTRACT_KEY'),
+    'secret' => env('TEXTRACT_SECRET'),
+    'region' => env('TEXTRACT_REGION'),
+    'bucket' => env('TEXTRACT_BUCKET'),
+],
+```
+
+Ensure the `textract_disk` setting in `config/extractor.php` is the same as your disk name in
+the `filesystems.php`
+config, you can change it with the .env value `TEXTRACT_DISK`.
+
+```php
+return [
+    "textract_disk" => env("TEXTRACT_DISK")
+];
+```
+
+`.env`
+
+```dotenv
+TEXTRACT_DISK="uploads"
+```
+
+**Note**
+
+Textract is not available in all regions:
+
+> Q: In which AWS regions is Amazon Textract available?
+> Amazon Textract is currently available in the US East (Northern Virginia), US East (Ohio), US West (Oregon), US West (
+> N. California), AWS GovCloud (US-West), AWS GovCloud (US-East), Canada (Central), EU (Ireland), EU (London), EU (
+> Frankfurt), EU (Paris), Asia Pacific (Singapore), Asia Pacific (Sydney), Asia Pacific (Seoul), and Asia Pacific (
+> Mumbai)
+> Regions.
+
+See: https://aws.amazon.com/textract/faqs/
 
 ## All Parameters and Their Functions
 
