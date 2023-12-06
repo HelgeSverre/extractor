@@ -30,6 +30,7 @@ class TestCase extends Orchestra
         config()->set('database.default', 'testing');
 
         config()->set('openai.api_key', env('OPENAI_API_KEY'));
+        config()->set('openai.request_timeout', env('OPENAI_REQUEST_TIMEOUT'));
 
         config()->set('extractor.textract_timeout', 30);
         config()->set('extractor.textract_polling_interval', 2);

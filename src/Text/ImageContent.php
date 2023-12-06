@@ -13,11 +13,10 @@ class ImageContent extends TextContent
     const TYPE_RAW = 'raw';
 
     public function __construct(
-        protected string  $content,
-        protected string  $type,
+        protected string $content,
+        protected string $type,
         protected ?string $mime = null
-    )
-    {
+    ) {
         parent::__construct($this->content);
     }
 
@@ -56,7 +55,12 @@ class ImageContent extends TextContent
         return $this->type == self::TYPE_RAW;
     }
 
-    public function content(): string
+    public function content(): ?string
+    {
+        return $this->content;
+    }
+
+    public function imageData(): ?string
     {
         return match ($this->type) {
             self::TYPE_FILE, self::TYPE_URL => file_get_contents($this->content),
@@ -71,7 +75,7 @@ class ImageContent extends TextContent
 
     public function toBase64(): string
     {
-        return base64_encode($this->content());
+        return base64_encode($this->imageData());
     }
 
     public function toBase64Url(): string
@@ -87,11 +91,11 @@ class ImageContent extends TextContent
     protected function guessMime(): ?string
     {
         if ($this->isRaw()) {
-            return rescue(fn() => Detector::detectFromContent($this->content)?->getMimeType());
+            return rescue(fn () => Detector::detectFromContent($this->content)?->getMimeType());
         }
 
         if ($this->isFile()) {
-            return rescue(fn() => Detector::detectByContent($this->content)?->getMimeType());
+            return rescue(fn () => Detector::detectByContent($this->content)?->getMimeType());
         }
 
         // NOTE: Mime type is irrelevant for type "url", as it will be auto-detected by OpenAI.
