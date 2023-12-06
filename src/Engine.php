@@ -3,7 +3,9 @@
 namespace HelgeSverre\Extractor;
 
 use HelgeSverre\Extractor\Extraction\Extractor;
+use HelgeSverre\Extractor\Text\ImageContent;
 use HelgeSverre\Extractor\Text\TextContent;
+use InvalidArgumentException;
 use OpenAI\Laravel\Facades\OpenAI;
 use OpenAI\Responses\Chat\CreateResponse as ChatResponse;
 use OpenAI\Responses\Completions\CreateResponse as CompletionResponse;
@@ -12,6 +14,8 @@ class Engine
 {
     // New
     const GPT_4_1106_PREVIEW = 'gpt-4-1106-preview';
+
+    const GPT_4_VISION = 'gpt-4-vision-preview';
 
     const GPT_3_TURBO_1106 = 'gpt-3.5-turbo-1106';
 
@@ -53,7 +57,34 @@ class Engine
             ]),
 
             // New json mode models.
-            $this->supportsJsonMode($model) => OpenAI::chat()->create([
+            $this->isVisionModel($model) => OpenAI::chat()->create([
+                'model' => $model,
+                'max_tokens' => $maxTokens,
+                'temperature' => $temperature,
+                'messages' => [
+                    [
+                        'role' => 'user',
+                        'content' => [
+                            [
+                                'type' => 'text',
+                                'text' => $prompt,
+                            ],
+                            [
+                                'type' => 'image_url',
+                                'image_url' => [
+                                    'url' => match (true) {
+                                        $input instanceof ImageContent && $input->isUrl() => $input->content(),
+                                        $input instanceof ImageContent && $input->isBase64able() => $input->toBase64Url(),
+                                        default => throw new InvalidArgumentException('TODO: replace this exception message')
+                                    },
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ]),
+
+            $this->isJsonModeCompatibleModel($model) => OpenAI::chat()->create([
                 'model' => $model,
                 'max_tokens' => $maxTokens,
                 'temperature' => $temperature,
@@ -81,20 +112,27 @@ class Engine
         return $extractor->process($text);
     }
 
-    public function isCompletionModel(string $model): bool
+    public function isVisionModel(string $model): bool
     {
         return in_array($model, [
-            'gpt-3.5-turbo-instruct',
-            'text-davinci-003',
-            'text-davinci-002',
+            self::GPT_4_VISION,
         ]);
     }
 
-    public function supportsJsonMode(string $model): bool
+    public function isCompletionModel(string $model): bool
     {
         return in_array($model, [
-            'gpt-4-1106-preview',
-            'gpt-3.5-turbo-1106',
+            self::GPT_3_TURBO_INSTRUCT,
+            self::TEXT_DAVINCI_003,
+            self::TEXT_DAVINCI_002,
+        ]);
+    }
+
+    public function isJsonModeCompatibleModel(string $model): bool
+    {
+        return in_array($model, [
+            self::GPT_4_1106_PREVIEW,
+            self::GPT_3_TURBO_1106,
         ]);
     }
 

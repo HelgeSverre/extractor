@@ -5,6 +5,7 @@ namespace HelgeSverre\Extractor\Extraction\Concerns;
 use HelgeSverre\Extractor\Exceptions\InvalidJsonReturnedError;
 use HelgeSverre\Extractor\Extraction\Extractor;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 /**
  * @mixin Extractor
@@ -21,6 +22,28 @@ trait DecodesResponse
         return 'output';
     }
 
+    public function extractJsonString($response): ?string
+    {
+        // It's already valid JSON
+        if (json_validate($response)) {
+            return $response;
+        }
+
+        // Attempt to extract the JSON from a Markdown code block.
+        // TODO: make this case in-sensitive (JSON vs json vs Json)
+        $maybeJson = Str::of($response)->between('```json', '```')->trim();
+
+        if ($maybeJson->isJson()) {
+            return $maybeJson->toString();
+        }
+
+        // TODO: Attempt to recover incorrectly formatted json (missing comma, unclosed brace etc
+
+        // TODO: Idea: optional property you can enable on extractor to attempt to "fix" the broken JSON by calling the openai model again.
+
+        return $response;
+    }
+
     public function bootDecodesResponse(): void
     {
         $this->registerPreprocessor(function ($input): mixed {
@@ -31,10 +54,11 @@ trait DecodesResponse
 
         $this->registerProcessor(function ($response): mixed {
 
-            $decoded = json_decode($response, true);
+            $maybeJson = $this->extractJsonString($response);
+
+            $decoded = json_decode($maybeJson, true);
 
             if ($decoded === null && $this->throwsOnInvalidJsonResponse()) {
-                // TODO: Attempt recovery by looking between first/last { and }
                 throw new InvalidJsonReturnedError("Invalid JSON returned:\n$response");
             }
 

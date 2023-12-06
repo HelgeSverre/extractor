@@ -6,6 +6,7 @@ use Exception;
 use HelgeSverre\Extractor\Extraction\Builtins\Fields;
 use HelgeSverre\Extractor\Extraction\Builtins\Simple;
 use HelgeSverre\Extractor\Extraction\Extractor;
+use HelgeSverre\Extractor\Text\ImageContent;
 use HelgeSverre\Extractor\Text\TextContent;
 
 class ExtractorManager
@@ -25,7 +26,7 @@ class ExtractorManager
     public function extract(
         string|Extractor $nameOrClass,
         TextContent|string $input,
-        array $config = null,
+        ?array $config = null,
         string $model = 'gpt-3.5-turbo-1106',
         int $maxTokens = 2000,
         float $temperature = 0.1,
@@ -48,7 +49,7 @@ class ExtractorManager
     public function view(
         string $view,
         TextContent|string $input,
-        array $config = null,
+        ?array $config = null,
         string $model = 'gpt-3.5-turbo-1106',
         int $maxTokens = 2000,
         float $temperature = 0.1,
@@ -67,9 +68,9 @@ class ExtractorManager
     }
 
     public function fields(
-        TextContent|string $input,
+        ImageContent|TextContent|string $input,
         array $fields,
-        array $config = null,
+        ?array $config = null,
         string $model = 'gpt-3.5-turbo-1106',
         int $maxTokens = 2000,
         float $temperature = 0.1,
