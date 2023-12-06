@@ -15,7 +15,8 @@ Laravel application.
 - Includes a flexible Field Extractor that can extract any arbitrary data without writing custom logic.
 - Can return a regular array or a [Spatie/data](https://spatie.be/docs/laravel-data/v3/introduction) object.
 - Integrates with [Textract](https://aws.amazon.com/textract/) for OCR functionality.
-- Uses [JSON Mode](https://platform.openai.com/docs/guides/text-generation/json-mode) from the latest GPT-3.5 and GPT-4 models.
+- Uses [JSON Mode](https://platform.openai.com/docs/guides/text-generation/json-mode) from the latest GPT-3.5 and GPT-4
+  models.
 
 ## Example
 
@@ -151,6 +152,75 @@ $data = Extractor::fields($sample,
         ],
     ],
     model: Engine::GPT_3_TURBO_1106,
+);
+```
+
+## Using GPT-4-Vision with Extractor
+
+**Note**: This feature is still WIP.
+
+The `Extractor` package also integrates with OpenAI's new Vision API, leveraging the powerful `gpt-4-vision-preview`
+model to extract
+structured data from images. This feature enables you to analyze and interpret visual content with ease, whether it's
+reading text from images, extracting data from charts, or understanding complex visual scenarios.
+
+### How to Use OpenAI's Vision API with ImageContent
+
+To use the Vision features in `Extractor`, you need to provide an image as input. This can be done in a few different
+ways:
+
+1. **Using a File Path**: Load an image from a file path.
+2. **Using Raw Image Data**: Use the raw data of an image, for example, from an uploaded file.
+3. **Using an Image URL**: Load an image directly from a URL.
+
+Here's how you can use each method:
+
+#### Using a File Path
+
+```php
+use HelgeSverre\Extractor\Text\ImageContent;
+
+$imagePath = __DIR__ . '/../samples/sample-image.jpg';
+$imageContent = ImageContent::file($imagePath);
+```
+
+#### Using Raw Image Data
+
+```php
+use HelgeSverre\Extractor\Text\ImageContent;
+
+$rawImageData = file_get_contents(__DIR__ . '/../samples/sample-image.jpg');
+$imageContent = ImageContent::raw($rawImageData);
+```
+
+#### Using an Image URL
+
+```php
+use HelgeSverre\Extractor\Text\ImageContent;
+
+$imageUrl = 'https://example.com/sample-image.jpg';
+$imageContent = ImageContent::url($imageUrl);
+```
+
+### Extracting Data from Images with OpenAI's Vision API
+
+After preparing your `ImageContent` object, you can pass it to the `Extractor::fields` method to extract structured data
+using OpenAI's Vision API. For example:
+
+```php
+use HelgeSverre\Extractor\Facades\Extractor;
+use HelgeSverre\Extractor\Text\ImageContent;
+
+$imageContent = ImageContent::file(__DIR__ . '/../samples/product-catalog.jpg');
+
+$data = Extractor::fields(
+    $imageContent,
+    fields: [
+        'productName',
+        'price',
+        'description',
+    ],
+    model: Engine::GPT_4_VISION,
 );
 ```
 
