@@ -79,6 +79,9 @@ php artisan vendor:publish --provider="OpenAI\Laravel\ServiceProvider"
 
 ```dotenv
 OPENAI_API_KEY="your-key-here"
+
+# Optional: Set request timeout (default: 30s).
+OPENAI_REQUEST_TIMEOUT=60
 ```
 
 ## Usage
