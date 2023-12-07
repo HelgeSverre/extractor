@@ -3,6 +3,8 @@
 namespace HelgeSverre\Extractor\Extraction\Builtins;
 
 use HelgeSverre\Extractor\Extraction\Extractor;
+use HelgeSverre\Extractor\Text\ImageContent;
+use Illuminate\Contracts\View\View;
 
 class Fields extends Extractor
 {
@@ -37,8 +39,12 @@ class Fields extends Extractor
         return $input;
     }
 
-    public function viewName(): string
+    public function view($input): View
     {
-        return 'extractor::fields';
+        if ($input['input'] instanceof ImageContent) {
+            return view('extractor::fields-vision', $input);
+        }
+
+        return view('extractor::fields', $input);
     }
 }

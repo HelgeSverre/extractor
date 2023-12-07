@@ -88,7 +88,7 @@ abstract class Extractor
         return Str::slug(class_basename(get_class($this)));
     }
 
-    public function preprocess(TextContent|string $input): string
+    public function preprocess(TextContent|string $input): mixed
     {
         foreach (Arr::pluck($this->preprocessors, 'callback') as $preprocessor) {
             $input = $preprocessor($input, $this);

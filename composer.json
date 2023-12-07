@@ -29,7 +29,8 @@
         "smalot/pdfparser": "*",
         "spatie/laravel-data": "^3.9",
         "spatie/laravel-package-tools": "^1.14.0",
-        "symfony/dom-crawler": "^6.3"
+        "symfony/dom-crawler": "^7.0.0",
+        "brandembassy/file-type-detector": "^2.3.1"
     },
     "require-dev": {
         "laravel/pint": "^1.0",
