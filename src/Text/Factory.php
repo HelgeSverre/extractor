@@ -12,6 +12,7 @@ use HelgeSverre\Extractor\Text\Loaders\Textract\TextractUsingS3Upload;
 use HelgeSverre\Extractor\Text\Loaders\Web;
 use HelgeSverre\Extractor\Text\Loaders\Word;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use InvalidArgumentException;
 
@@ -35,6 +36,39 @@ class Factory
             'web' => $this->container->make(Web::class),
             'word' => $this->container->make(Word::class),
             default => throw new InvalidArgumentException("Invalid text loader type: $type"),
+        };
+    }
+
+    public function fromMime(string $mime, mixed $content): ?TextContent
+    {
+        return match (true) {
+            blank($content) => null,
+            Str::contains($mime, 'image') => rescue(
+                callback: fn () => $this->textract($content),
+                rescue: $this->textractUsingS3Upload($content)
+            ),
+            Str::contains($mime, 'pdf') => rescue(
+                callback: fn () => $this->pdf($content),
+                rescue: $this->textractUsingS3Upload($content)
+            ),
+            Str::contains($mime, ['xml', 'html']) => $this->html($content),
+            Str::contains($mime, 'text/plain') => $this->text($content),
+            Str::contains($mime, 'text/rtf') => $this->rtf($content),
+
+            // Not commonly used, but let's use it anyways.
+            Str::contains($mime, 'text/x-uri') => $this->web($content),
+
+            // Stolen from: https://stackoverflow.com/questions/4212861/what-is-a-correct-mime-type-for-docx-pptx-etc
+            in_array($mime, [
+                'application/msword',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
+                'application/vnd.ms-word.document.macroEnabled.12',
+                'application/vnd.ms-word.template.macroEnabled.12',
+            ]) => $this->word($content),
+
+            default => $this->textractUsingS3Upload($content)
         };
     }
 
