@@ -426,6 +426,28 @@ return [
 TEXTRACT_DISK="uploads"
 ```
 
+### Delete the files after processing them with Textract
+
+#### Using S3 Lifecycle Rules
+
+You can configure a lifecycle rule on your S3 bucket to delete the files after a certain amount of time, see the AWS
+docs for more info:
+
+https://repost.aws/knowledge-center/s3-empty-bucket-lifecycle-rule
+
+#### Using the `cleanupFileUsing` hook
+
+By default, the package will __NOT__ delete the files that has been uploaded in the textract S3 bucket, if you want to
+delete these files, you can implement this using the `TextractUsingS3Upload::cleanupFileUsing(Closure)` hook.
+
+```php
+// Delete the file from the S3 bucket
+TextractUsingS3Upload::cleanupFileUsing(function (string $filePath) {
+    Storage::disk('textract')->delete($filePath);
+}
+```
+
+
 **Note**
 
 Textract is not available in all regions:
