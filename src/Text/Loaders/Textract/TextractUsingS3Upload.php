@@ -48,6 +48,7 @@ class TextractUsingS3Upload implements TextLoader
         return $this->defaultFilePathGenerator();
     }
 
+    /** @noinspection PhpInconsistentReturnPointsInspection */
     public function cleanup(string $path)
     {
         if (static::$cleanupFileUsing) {
@@ -95,6 +96,5 @@ class TextractUsingS3Upload implements TextLoader
         $this->cleanup($path);
 
         return new TextContent($result);
-
     }
 }
