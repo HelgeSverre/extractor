@@ -1,7 +1,10 @@
 <?php
 
 use HelgeSverre\Extractor\Facades\Text;
+use HelgeSverre\Extractor\Text\Loaders\Textract\TextractService;
+use HelgeSverre\Extractor\Text\Loaders\Textract\TextractUsingS3Upload;
 use HelgeSverre\Extractor\Text\TextContent;
+use Illuminate\Support\Facades\Storage;
 
 it('Can load Text', function () {
     $text = Text::text(file_get_contents(__DIR__.'/../samples/wolt-pizza-norwegian.txt'));
@@ -93,4 +96,48 @@ it('Can load rtf files', function () {
         'Contract Agreement',
         'Termination of the Agreement',
     );
+});
+
+it('removes the file from S3 using the provided cleanup callback', function () {
+    Storage::fake('s3');
+
+    $mock = Mockery::mock(TextractService::class);
+    $mock->shouldReceive('s3ObjectToText');
+
+    $textractUsingS3Upload = new TextractUsingS3Upload($mock);
+
+    $testFilePath = 'extractor/test-file.pdf';
+
+    Storage::disk('s3')->put($testFilePath, 'Test content');
+
+    Storage::disk('s3')->assertExists($testFilePath);
+
+    TextractUsingS3Upload::cleanupFileUsing(function ($path) {
+        Storage::disk('s3')->delete($path);
+    });
+
+    $textractUsingS3Upload->cleanup($testFilePath);
+
+    Storage::disk('s3')->assertMissing($testFilePath);
+});
+
+it('overrides the default file path generation with a custom callback', function () {
+    Storage::fake('s3');
+
+    $mock = Mockery::mock(TextractService::class);
+    $mock->shouldReceive('s3ObjectToText');
+
+    $textractUsingS3Upload = new TextractUsingS3Upload($mock);
+
+    $customFilePath = 'custom-path/custom-file.pdf';
+
+    TextractUsingS3Upload::generateFilePathUsing(function () use ($customFilePath) {
+        return $customFilePath;
+    });
+
+    expect($textractUsingS3Upload->getFilePath())->toBe($customFilePath);
+
+    Storage::disk('s3')->put($textractUsingS3Upload->getFilePath(), 'Test content');
+
+    Storage::disk('s3')->assertExists($customFilePath);
 });

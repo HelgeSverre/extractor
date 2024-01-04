@@ -18,8 +18,15 @@ class TextractUsingS3Upload implements TextLoader
 {
     protected static mixed $generateFilePathUsing = null;
 
+    protected static mixed $cleanupFileUsing = null;
+
     public function __construct(protected TextractService $textractService)
     {
+    }
+
+    public static function cleanupFileUsing(callable $callback): void
+    {
+        static::$cleanupFileUsing = $callback;
     }
 
     public static function generateFilePathUsing(callable $callback): void
@@ -39,6 +46,16 @@ class TextractUsingS3Upload implements TextLoader
         }
 
         return $this->defaultFilePathGenerator();
+    }
+
+    /** @noinspection PhpInconsistentReturnPointsInspection */
+    public function cleanup(string $path)
+    {
+        if (static::$cleanupFileUsing) {
+            return (static::$cleanupFileUsing)($path);
+        }
+
+        // No cleanup by default
     }
 
     /**
@@ -70,12 +87,14 @@ class TextractUsingS3Upload implements TextLoader
             throw new TextractStorageException("Could not create the file in the textract s3 bucket with path '{$path}'.");
         }
 
-        return new TextContent(
-            $this->textractService->s3ObjectToText(
-                s3Object: new S3Object(bucket: $bucket, name: $path),
-                timeoutInSeconds: config('extractor.textract_timeout'),
-                pollingIntervalInSeconds: config('extractor.textract_polling_interval')
-            )
+        $result = $this->textractService->s3ObjectToText(
+            s3Object: new S3Object(bucket: $bucket, name: $path),
+            timeoutInSeconds: config('extractor.textract_timeout'),
+            pollingIntervalInSeconds: config('extractor.textract_polling_interval')
         );
+
+        $this->cleanup($path);
+
+        return new TextContent($result);
     }
 }
