@@ -10,5 +10,8 @@ interface Engine
     public function run(
         Extractor $extractor,
         TextContent|string $input,
+        string $model,
+        int $maxTokens,
+        float $temperature,
     ): mixed;
 }

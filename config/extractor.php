@@ -1,6 +1,9 @@
 <?php
 
 return [
+
+    'engine' => env('EXTRACTOR_ENGINE', 'openai'),
+
     /*
     |--------------------------------------------------------------------------
     | Textract Timeout

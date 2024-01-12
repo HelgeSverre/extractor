@@ -21,6 +21,10 @@
         "php": "^8.2",
         "ext-zip": "*",
         "aws/aws-sdk-php": "^3.281",
+        "brandembassy/file-type-detector": "^2.3.1",
+        "cloudstudio/ollama-laravel": "^1.0",
+        "google/cloud": "^0.230.0",
+        "helgesverre/mistral": "^1.0",
         "illuminate/contracts": "^10.0",
         "jstewmc/rtf": "^0.5.2",
         "league/flysystem-aws-s3-v3": "^3.16",
@@ -29,8 +33,7 @@
         "smalot/pdfparser": "*",
         "spatie/laravel-data": "^3.9",
         "spatie/laravel-package-tools": "^1.14.0",
-        "symfony/dom-crawler": "^7.0.0",
-        "brandembassy/file-type-detector": "^2.3.1"
+        "symfony/dom-crawler": "^7.0.0"
     },
     "require-dev": {
         "laravel/pint": "^1.0",

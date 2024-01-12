@@ -3,6 +3,7 @@
 namespace HelgeSverre\Extractor;
 
 use Exception;
+use HelgeSverre\Extractor\Contracts\Engine;
 use HelgeSverre\Extractor\Extraction\Builtins\Fields;
 use HelgeSverre\Extractor\Extraction\Builtins\Simple;
 use HelgeSverre\Extractor\Extraction\Extractor;

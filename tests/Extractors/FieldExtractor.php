@@ -1,10 +1,100 @@
 <?php
 
 use HelgeSverre\Extractor\Engine;
+use HelgeSverre\Extractor\Engines\GeminiEngine;
+use HelgeSverre\Extractor\Engines\MistralEngine;
+use HelgeSverre\Extractor\Engines\OllamaEngine;
+use HelgeSverre\Extractor\ExtractorManager;
 use HelgeSverre\Extractor\Facades\Extractor;
 use HelgeSverre\Extractor\Facades\Text;
 
-it('can extract simple fields using gpt 3.5 json mode', function () {
+it('can use mistral', function () {
+    $sample = Text::html(file_get_contents(__DIR__.'/../samples/event-page.html'));
+
+    $manager = new ExtractorManager(
+        new MistralEngine(env("MISTRAL_API_KEY"))
+    );
+
+    $data = $manager->fields($sample,
+        fields: [
+            'minimumAge',
+            'date' => 'MUST BE FORMATTED AS Y-m-d (2021-12-01)',
+            'eventName',
+            'description',
+            'tags',
+        ],
+        model: MistralEngine::tiny,
+        temperature: 0.1,
+    );
+
+    dump($data);
+
+    expect($data)->toBeArray()
+        ->and($data['minimumAge'])->toBe(20)
+        ->and($data['date'])->toBe('2023-12-01')
+        ->and(strtolower($data['eventName']))->toBe('oslo deathfest')
+        ->and($data['description'])->toBeString()
+        ->and($data['tags'])->toBeArray();
+});
+
+it('can use gemini', function () {
+    $sample = Text::html(file_get_contents(__DIR__.'/../samples/event-page.html'));
+
+    $manager = new ExtractorManager(
+        new GeminiEngine()
+    );
+
+    $data = $manager->fields($sample,
+        fields: [
+            'minimumAge',
+            'date' => 'MUST BE FORMATTED AS Y-m-d (2021-12-01)',
+            'eventName',
+            'description',
+            'tags',
+        ],
+        temperature: 0.1,
+    );
+
+    dump($data);
+
+    expect($data)->toBeArray()
+        ->and($data['minimumAge'])->toBe(20)
+        ->and($data['date'])->toBe('2023-12-01')
+        ->and(strtolower($data['eventName']))->toBe('oslo deathfest')
+        ->and($data['description'])->toBeString()
+        ->and($data['tags'])->toBeArray();
+});
+
+it('can use ollama tinyllama', function () {
+    $sample = Text::html(file_get_contents(__DIR__.'/../samples/event-page.html'));
+
+    $manager = new ExtractorManager(
+        new OllamaEngine()
+    );
+
+    $data = $manager->fields($sample,
+        fields: [
+            'minimumAge' => 'minimum age to attend the event',
+            'date' => 'MUST BE FORMATTED AS Y-m-d (example: 2021-12-01)',
+            'eventName' => 'the name of the event',
+            'description' => 'a description of the event',
+            'tags' => 'a list of tags for the event',
+        ],
+        model: 'tinyllama',
+        temperature: 0.1,
+    );
+
+    dump($data);
+
+    expect($data)->toBeArray()
+        ->and($data['minimumAge'])->toBe(20)
+        ->and($data['date'])->toBe('2023-12-01')
+        ->and(strtolower($data['eventName']))->toBe('oslo deathfest')
+        ->and($data['description'])->toBeString()
+        ->and($data['tags'])->toBeArray();
+});
+
+it('can extract simple fields using gpt-4-1106-preview with json mode', function () {
     $sample = Text::html(file_get_contents(__DIR__.'/../samples/event-page.html'));
 
     $data = Extractor::fields($sample,
