@@ -25,7 +25,7 @@
         "jstewmc/rtf": "^0.5.2",
         "league/flysystem-aws-s3-v3": "^3.22.0",
         "openai-php/laravel": "^v0.8.1",
-        "smalot/pdfparser": "v2.9.0",
+        "smalot/pdfparser": "^2.10",
         "spatie/laravel-data": "^3|^4",
         "spatie/laravel-package-tools": "^1.16.2",
         "symfony/dom-crawler": "^7.0.0",
