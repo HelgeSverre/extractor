@@ -24,6 +24,8 @@ class Engine
 
     const GPT4_32K = 'gpt-4-32k';
 
+    const GPT_4o = 'gpt-4o';
+
     // GPT-3.5
     const GPT_3_TURBO_INSTRUCT = 'gpt-3.5-turbo-instruct';
 
@@ -116,6 +118,7 @@ class Engine
     {
         return in_array($model, [
             self::GPT_4_VISION,
+            self::GPT_4o,
         ]);
     }
 
