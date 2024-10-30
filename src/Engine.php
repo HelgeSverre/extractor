@@ -15,6 +15,9 @@ class Engine
     // New
     const GPT_4_OMNI_MINI = 'gpt-4o-mini';
 
+    /** @deprecated Aliased to GPT_4_OMNI_MINI, will be removed at some point. */
+    const GPT_4o = self::GPT_4_OMNI;
+
     const GPT_4_OMNI = 'gpt-4o';
 
     const GPT_4_TURBO = 'gpt-4-turbo';
@@ -33,8 +36,6 @@ class Engine
     const GPT_4 = 'gpt-4';
 
     const GPT4_32K = 'gpt-4-32k';
-
-    const GPT_4o = 'gpt-4o';
 
     // GPT-3.5
     const GPT_3_TURBO_INSTRUCT = 'gpt-3.5-turbo-instruct';
@@ -140,7 +141,7 @@ class Engine
     {
         return in_array($model, [
             self::GPT_4_VISION,
-            self::GPT_4o,
+            self::GPT_4_OMNI,
         ]);
     }
 
