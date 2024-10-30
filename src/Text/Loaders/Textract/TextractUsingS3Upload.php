@@ -20,9 +20,7 @@ class TextractUsingS3Upload implements TextLoader
 
     protected static mixed $cleanupFileUsing = null;
 
-    public function __construct(protected TextractService $textractService)
-    {
-    }
+    public function __construct(protected TextractService $textractService) {}
 
     public static function cleanupFileUsing(callable $callback): void
     {

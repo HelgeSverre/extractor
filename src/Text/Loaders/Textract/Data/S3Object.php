@@ -8,8 +8,7 @@ class S3Object
         readonly public string $bucket,
         readonly public string $name,
         readonly public ?string $version = null
-    ) {
-    }
+    ) {}
 
     public function getClientRequestToken(): string
     {

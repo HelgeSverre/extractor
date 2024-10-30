@@ -13,11 +13,21 @@ use OpenAI\Responses\Completions\CreateResponse as CompletionResponse;
 class Engine
 {
     // New
+    const GPT_4_OMNI_MINI = 'gpt-4o-mini';
+
+    const GPT_4_OMNI = 'gpt-4o';
+
+    const GPT_4_TURBO = 'gpt-4-turbo';
+
     const GPT_4_1106_PREVIEW = 'gpt-4-1106-preview';
 
     const GPT_4_VISION = 'gpt-4-vision-preview';
 
     const GPT_3_TURBO_1106 = 'gpt-3.5-turbo-1106';
+
+    const GPT_O1_MINI = 'o1-mini';
+
+    const GPT_O1_PREVIEW = 'o1-preview';
 
     // GPT-4
     const GPT_4 = 'gpt-4';
@@ -34,8 +44,10 @@ class Engine
     const GPT_3_TURBO = 'gpt-3.5-turbo';
 
     // Legacy
+    /** @deprecated */
     const TEXT_DAVINCI_003 = 'text-davinci-003';
 
+    /** @deprecated */
     const TEXT_DAVINCI_002 = 'text-davinci-002';
 
     public function run(
@@ -97,6 +109,16 @@ class Engine
                 ]],
             ]),
 
+            // TODO: Explore this model more in the future, this is just to make it "work" for now...
+            $this->isOhOne($model) => OpenAI::chat()->create([
+                'model' => $model,
+                'max_completion_tokens' => $maxTokens,
+                'messages' => [[
+                    'role' => 'user',
+                    'content' => $prompt,
+                ]],
+            ]),
+
             // Previous generation models
             default => OpenAI::chat()->create([
                 'model' => $model,
@@ -136,6 +158,16 @@ class Engine
         return in_array($model, [
             self::GPT_4_1106_PREVIEW,
             self::GPT_3_TURBO_1106,
+            self::GPT_4_OMNI,
+            self::GPT_4_OMNI_MINI,
+        ]);
+    }
+
+    public function isOhOne(string $model): bool
+    {
+        return in_array($model, [
+            self::GPT_O1_MINI,
+            self::GPT_O1_PREVIEW,
         ]);
     }
 

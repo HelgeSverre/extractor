@@ -10,7 +10,7 @@ class Pdf implements TextLoader
 {
     public function load(mixed $data): ?TextContent
     {
-        $parser = new Parser();
+        $parser = new Parser;
         $parsed = $parser->parseContent($data);
         $text = $parsed->getText();
 

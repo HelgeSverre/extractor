@@ -11,9 +11,7 @@ use HelgeSverre\Extractor\Text\TextContent;
  */
 class Textract implements TextLoader
 {
-    public function __construct(protected TextractService $textractService)
-    {
-    }
+    public function __construct(protected TextractService $textractService) {}
 
     public function load(mixed $data): ?TextContent
     {

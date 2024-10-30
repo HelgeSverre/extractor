@@ -13,10 +13,7 @@ class ExtractorManager
 {
     protected array $extractors = [];
 
-    public function __construct(protected Engine $engine)
-    {
-
-    }
+    public function __construct(protected Engine $engine) {}
 
     public function extend(string $name, callable $callback): void
     {

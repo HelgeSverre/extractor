@@ -12,9 +12,7 @@ use Illuminate\Support\Arr;
 
 class TextractService
 {
-    public function __construct(protected TextractClient $textractClient)
-    {
-    }
+    public function __construct(protected TextractClient $textractClient) {}
 
     /**
      * @throws TextractFailed

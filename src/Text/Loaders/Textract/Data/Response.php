@@ -13,9 +13,7 @@ class Response
         protected array $forms = [],
         protected array $tables = [],
         protected array $metaData = [],
-    ) {
-
-    }
+    ) {}
 
     public static function fromAwsResult(Result $result): ?self
     {
@@ -24,7 +22,7 @@ class Response
 
     public static function fromArray(array $array): ?self
     {
-        $response = new self();
+        $response = new self;
         $response->raw = $array;
         $response->metaData['pages'] = Arr::get($array, 'DocumentMetadata.Pages');
 

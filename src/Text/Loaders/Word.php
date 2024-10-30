@@ -13,7 +13,7 @@ class Word implements TextLoader
         $tempFile = tempnam(sys_get_temp_dir(), 'receipt_parser_zip_');
         file_put_contents($tempFile, $data);
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
 
         if ($zip->open($tempFile) !== true) {
             unlink($tempFile);

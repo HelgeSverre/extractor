@@ -11,6 +11,5 @@ class ContactDto extends Data
         public string $title,
         public string $phone,
         public string $email,
-    ) {
-    }
+    ) {}
 }
