@@ -159,7 +159,7 @@ $data = Extractor::fields($sample,
 
 **Note**: This feature is still WIP.
 
-The `Extractor` package also integrates with OpenAI's new Vision API, leveraging the powerful `gpt-4-vision-preview`
+The `Extractor` package also integrates with OpenAI's new Vision API, leveraging the powerful `gpt-4o`
 model to extract
 structured data from images. This feature enables you to analyze and interpret visual content with ease, whether it's
 reading text from images, extracting data from charts, or understanding complex visual scenarios.
@@ -220,7 +220,7 @@ $data = Extractor::fields(
         'price',
         'description',
     ],
-    model: Engine::GPT_4_VISION,
+    model: Engine::GPT_4_OMNI,
 );
 ```
 
@@ -475,23 +475,23 @@ convenience, most of the accepted models are provided as constants on the `Engin
 
 Available Models:
 
-| Model Identifier               | Model                    | Note                                                                                                                                                                                           |
-|--------------------------------|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Engine::GPT_4_OMNI_MINI`      | 'gpt-4o-mini'            | Optimized version of GPT-4 with enhanced JSON mode capabilities                                                                                                                                |
-| `Engine::GPT_4_OMNI`           | 'gpt-4o'                 | Enhanced GPT-4 model with improved JSON mode and vision capabilities                                                                                                                           |
-| `Engine::GPT_4_TURBO`          | 'gpt-4-turbo'            | Latest GPT-4 model optimized for performance and efficiency                                                                                                                                    |
-| `Engine::GPT_4_1106_PREVIEW`   | 'gpt-4-1106-preview'     | GPT-4 Turbo, featuring improved instruction following, JSON mode, reproducible outputs, parallel function calling. Maximum 4,096 output tokens. Preview model, not yet for production traffic. |
-| `Engine::GPT_4_VISION`         | 'gpt-4-vision-preview'   | Multimodal model capable of processing both text and images                                                                                                                                    |
-| `Engine::GPT_3_TURBO_1106`     | 'gpt-3.5-turbo-1106'     | Updated GPT-3.5 Turbo, with improvements similar to GPT-4 Turbo. Returns up to 4,096 output tokens.                                                                                            |
-| `Engine::GPT_O1_MINI`          | 'o1-mini'                | Specialized model optimized for specific tasks                                                                                                                                                 |
-| `Engine::GPT_O1_PREVIEW`       | 'o1-preview'             | Preview version of the O1 model with enhanced capabilities                                                                                                                                     |
-| `Engine::GPT_4`                | 'gpt-4'                  | Large multimodal model, capable of solving complex problems with greater accuracy                                                                                                              |
-| `Engine::GPT4_32K`             | 'gpt-4-32k'              | Extended version of GPT-4 with a larger context window of 32,768 tokens                                                                                                                        |
-| `Engine::GPT_3_TURBO_INSTRUCT` | 'gpt-3.5-turbo-instruct' | Similar to text-davinci-003, optimized for legacy Completions endpoint                                                                                                                         |
-| `Engine::GPT_3_TURBO_16K`      | 'gpt-3.5-turbo-16k'      | Extended version of GPT-3.5 Turbo, supporting a larger context window of 16,385 tokens                                                                                                         |
-| `Engine::GPT_3_TURBO`          | 'gpt-3.5-turbo'          | Optimized for chat using the Chat Completions API                                                                                                                                              |
-| `Engine::TEXT_DAVINCI_003`     | 'text-davinci-003'       | **DEPRECATED** - Legacy model, no longer operational                                                                                                                                           |
-| `Engine::TEXT_DAVINCI_002`     | 'text-davinci-002'       | **DEPRECATED** - Legacy model, no longer operational                                                                                                                                           |
+| Model Identifier               | Model                      | Note                                                                                                                                                                                           |
+|--------------------------------|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Engine::GPT_4_OMNI_MINI`      | 'gpt-4o-mini'              | Optimized version of GPT-4 with enhanced JSON mode capabilities                                                                                                                                |
+| `Engine::GPT_4_OMNI`           | 'gpt-4o'                   | Enhanced GPT-4 model with improved JSON mode and vision capabilities                                                                                                                           |
+| `Engine::GPT_4_TURBO`          | 'gpt-4-turbo'              | Latest GPT-4 model optimized for performance and efficiency                                                                                                                                    |
+| `Engine::GPT_4_1106_PREVIEW`   | 'gpt-4-1106-preview'       | GPT-4 Turbo, featuring improved instruction following, JSON mode, reproducible outputs, parallel function calling. Maximum 4,096 output tokens. Preview model, not yet for production traffic. |
+| `Engine::GPT_3_TURBO_1106`     | 'gpt-3.5-turbo-1106'       | Updated GPT-3.5 Turbo, with improvements similar to GPT-4 Turbo. Returns up to 4,096 output tokens.                                                                                            |
+| `Engine::GPT_O1_MINI`          | 'o1-mini'                  | Specialized model optimized for specific tasks                                                                                                                                                 |
+| `Engine::GPT_O1_PREVIEW`       | 'o1-preview'               | Preview version of the O1 model with enhanced capabilities                                                                                                                                     |
+| `Engine::GPT_4`                | 'gpt-4'                    | Large multimodal model, capable of solving complex problems with greater accuracy                                                                                                              |
+| `Engine::GPT4_32K`             | 'gpt-4-32k'                | Extended version of GPT-4 with a larger context window of 32,768 tokens                                                                                                                        |
+| `Engine::GPT_3_TURBO_INSTRUCT` | 'gpt-3.5-turbo-instruct'   | Similar to text-davinci-003, optimized for legacy Completions endpoint                                                                                                                         |
+| `Engine::GPT_3_TURBO_16K`      | 'gpt-3.5-turbo-16k'        | Extended version of GPT-3.5 Turbo, supporting a larger context window of 16,385 tokens                                                                                                         |
+| `Engine::GPT_3_TURBO`          | 'gpt-3.5-turbo'            | Optimized for chat using the Chat Completions API                                                                                                                                              |
+| `Engine::TEXT_DAVINCI_003`     | ~~'text-davinci-003'~~     | **DEPRECATED** - Legacy model, no longer operational                                                                                                                                           |
+| `Engine::TEXT_DAVINCI_002`     | ~~'text-davinci-002'~~     | **DEPRECATED** - Legacy model, no longer operational                                                                                                                                           |
+| `Engine::GPT_4_VISION`         | ~~'gpt-4-vision-preview'~~ | **DEPRECATED** Multimodal model capable of processing both text and images                                                                                                                     |
 
 **`$maxTokens` (int)**
 

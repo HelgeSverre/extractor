@@ -24,6 +24,7 @@ class Engine
 
     const GPT_4_1106_PREVIEW = 'gpt-4-1106-preview';
 
+    /** @deprecated */
     const GPT_4_VISION = 'gpt-4-vision-preview';
 
     const GPT_3_TURBO_1106 = 'gpt-3.5-turbo-1106';
@@ -110,15 +111,7 @@ class Engine
                 ]],
             ]),
 
-            // TODO: Explore this model more in the future, this is just to make it "work" for now...
-            $this->isOhOne($model) => OpenAI::chat()->create([
-                'model' => $model,
-                'max_completion_tokens' => $maxTokens,
-                'messages' => [[
-                    'role' => 'user',
-                    'content' => $prompt,
-                ]],
-            ]),
+            $this->isHybridModel($model) => $this->handleHybridModel($input, $prompt, $maxTokens, $temperature, $model),
 
             // Previous generation models
             default => OpenAI::chat()->create([
@@ -162,6 +155,53 @@ class Engine
             self::GPT_4_OMNI,
             self::GPT_4_OMNI_MINI,
         ]);
+    }
+
+    public function isHybridModel(string $model): bool
+    {
+        return $model === self::GPT_4o;
+    }
+
+    private function handleHybridModel($input, $prompt, $maxTokens, $temperature, $model): mixed
+    {
+        if ($input instanceof ImageContent) {
+            return OpenAI::chat()->create([
+                'model' => $model,
+                'max_tokens' => $maxTokens,
+                'temperature' => $temperature,
+                'messages' => [
+                    [
+                        'role' => 'user',
+                        'content' => [
+                            [
+                                'type' => 'text',
+                                'text' => $prompt,
+                            ],
+                            [
+                                'type' => 'image_url',
+                                'image_url' => [
+                                    'url' => $input->isUrl()
+                                        ? $input->content()
+                                        : $input->toBase64Url(),
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+        } elseif (is_string($input) || $input instanceof TextContent) {
+            return OpenAI::chat()->create([
+                'model' => $model,
+                'max_tokens' => $maxTokens,
+                'temperature' => $temperature,
+                'messages' => [[
+                    'role' => 'user',
+                    'content' => $prompt,
+                ]],
+            ]);
+        } else {
+            throw new InvalidArgumentException('Unsupported input type for hybrid model');
+        }
     }
 
     public function isOhOne(string $model): bool

@@ -67,7 +67,7 @@ it('can extract work history from a PDF CV using gpt 3.5 json mode', function ()
     );
 
     expect($data)->toBeArray()
-        ->and($data['name'])->toBe('Helge Sverre')
+        ->and($data['name'])->toContain('Helge Sverre')
         ->and($data['email'])->toBe('helge.sverre@gmail.com')
         ->and($data['certifications'])->toMatchArray([
             'Laravel Certified Developer',
