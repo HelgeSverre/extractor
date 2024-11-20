@@ -72,6 +72,8 @@ class Engine
                 'prompt' => $prompt,
             ]),
 
+            $this->isHybridModel($model) => $this->handleHybridModel($input, $prompt, $maxTokens, $temperature, $model),
+
             // New json mode models.
             $this->isVisionModel($model) => OpenAI::chat()->create([
                 'model' => $model,
@@ -110,8 +112,6 @@ class Engine
                     'content' => $prompt,
                 ]],
             ]),
-
-            $this->isHybridModel($model) => $this->handleHybridModel($input, $prompt, $maxTokens, $temperature, $model),
 
             // Previous generation models
             default => OpenAI::chat()->create([
