@@ -239,7 +239,8 @@ a `JobPostingExtractor` to extract key information from job postings:
 
 namespace App\Extractors;
 
-use HelgeSverre\Extractor\Extraction\Extractor;use HelgeSverre\Extractor\Text\TextContent;
+use HelgeSverre\Extractor\Extraction\Extractor;
+use HelgeSverre\Extractor\Text\TextContent;
 
 class JobPostingExtractor extends Extractor
 {
