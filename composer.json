@@ -21,10 +21,10 @@
         "php": "^8.2",
         "ext-zip": "*",
         "aws/aws-sdk-php": "^3.281",
-        "illuminate/contracts": "^10.0|^11.0",
+        "illuminate/contracts": "^10.0|^11.0|^12.0",
         "jstewmc/rtf": "^0.5.2",
         "league/flysystem-aws-s3-v3": "^3.22.0",
-        "openai-php/laravel": "^v0.10.2",
+        "openai-php/laravel": "^v0.10.2|^0.11",
         "smalot/pdfparser": "^2.10",
         "spatie/laravel-data": "^3|^4",
         "spatie/laravel-package-tools": "^1.16.2",
@@ -35,10 +35,10 @@
         "laravel/pint": "^1.0",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^7.8",
-        "orchestra/testbench": "^8.8",
-        "pestphp/pest": "^2.0",
-        "pestphp/pest-plugin-arch": "^2.0",
-        "pestphp/pest-plugin-laravel": "^2.0"
+        "orchestra/testbench": "^8.8|^10.0",
+        "pestphp/pest": "^2.0|^3.7",
+        "pestphp/pest-plugin-arch": "^2.0|^3.0",
+        "pestphp/pest-plugin-laravel": "^2.0|^3.1"
     },
     "autoload": {
         "psr-4": {
