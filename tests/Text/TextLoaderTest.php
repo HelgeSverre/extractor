@@ -71,6 +71,16 @@ it('Can load a Word document exported from google docs', function () {
     );
 });
 
+it('Can load a Word document exported from google docs with improved .doc extraction', function () {
+    $text = Text::word(file_get_contents(__DIR__.'/../samples/word-file-export-google-docs.docx'));
+
+    expect($text)->toBeInstanceOf(TextContent::class)->and($text->toString())->toContain(
+        'Sample Markdown',
+        'Second Heading',
+        'The end',
+    );
+});
+
 it('Can load text from website', function () {
     $text = Text::web('https://sparksuite.github.io/simple-html-invoice-template/');
 

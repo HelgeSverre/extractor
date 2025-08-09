@@ -4,6 +4,7 @@ namespace HelgeSverre\Extractor\Text\Loaders;
 
 use HelgeSverre\Extractor\Contracts\TextLoader;
 use HelgeSverre\Extractor\Text\TextContent;
+use PhpOffice\PhpWord\IOFactory;
 use ZipArchive;
 
 class Word implements TextLoader
@@ -58,6 +59,57 @@ class Word implements TextLoader
     }
 
     protected function loadTextFromDoc($data): ?string
+    {
+        $tempFile = tempnam(sys_get_temp_dir(), 'word_doc_parser_');
+        file_put_contents($tempFile, $data);
+
+        try {
+            // Method 1: Try PHPWord if available
+            $text = $this->loadTextFromDocUsingPhpWord($tempFile);
+            if ($text !== null && trim($text) !== '') {
+                return trim($text);
+            }
+
+            // Method 2: Fallback to original naive method
+            return $this->loadTextFromDocNaive($data);
+        } finally {
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
+        }
+    }
+
+    protected function loadTextFromDocUsingPhpWord(string $filePath): ?string
+    {
+        if (! class_exists('\PhpOffice\PhpWord\IOFactory')) {
+            return null;
+        }
+
+        try {
+            $phpWord = IOFactory::load($filePath);
+            $text = '';
+
+            foreach ($phpWord->getSections() as $section) {
+                foreach ($section->getElements() as $element) {
+                    if (method_exists($element, 'getText')) {
+                        $text .= $element->getText()."\n";
+                    } elseif (method_exists($element, 'getElements')) {
+                        foreach ($element->getElements() as $subElement) {
+                            if (method_exists($subElement, 'getText')) {
+                                $text .= $subElement->getText()."\n";
+                            }
+                        }
+                    }
+                }
+            }
+
+            return $text ? trim($text) : null;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    protected function loadTextFromDocNaive($data): ?string
     {
         $text = '';
         $lines = explode(chr(0x0D), $data);
