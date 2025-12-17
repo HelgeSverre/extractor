@@ -55,4 +55,17 @@ return [
     'textract_secret' => env('TEXTRACT_SECRET'),
     'textract_version' => env('TEXTRACT_VERSION', '2018-06-27'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | OpenAI Configuration
+    |--------------------------------------------------------------------------
+    |
+    | These settings allow you to customize the OpenAI API connection.
+    | Use OPENAI_BASE_URI to point to Azure OpenAI, Ollama, or other
+    | OpenAI-compatible APIs.
+    |
+    */
+
+    'openai_base_uri' => env('OPENAI_BASE_URI'),
+
 ];

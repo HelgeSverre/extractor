@@ -1,9 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelgeSverre\Extractor;
 
 use Aws\Textract\TextractClient;
+use GuzzleHttp\Client as GuzzleClient;
 use HelgeSverre\Extractor\Text\Factory;
+use OpenAI;
+use OpenAI\Client as OpenAIClient;
+use OpenAI\Contracts\ClientContract;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -32,5 +38,16 @@ class ExtractorServiceProvider extends PackageServiceProvider
                 'secret' => config('extractor.textract_secret'),
             ],
         ]));
+
+        // Override OpenAI client if custom base URI is configured
+        if (config('extractor.openai_base_uri')) {
+            $this->app->singleton(ClientContract::class, fn (): OpenAIClient => OpenAI::factory()
+                ->withApiKey(config('openai.api_key'))
+                ->withOrganization(config('openai.organization'))
+                ->withBaseUri(config('extractor.openai_base_uri'))
+                ->withHttpHeader('OpenAI-Beta', 'assistants=v2')
+                ->withHttpClient(new GuzzleClient(['timeout' => config('openai.request_timeout', 30)]))
+                ->make());
+        }
     }
 }
