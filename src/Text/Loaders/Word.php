@@ -1,76 +1,97 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelgeSverre\Extractor\Text\Loaders;
 
+use Exception;
 use HelgeSverre\Extractor\Contracts\TextLoader;
 use HelgeSverre\Extractor\Text\TextContent;
+use InvalidArgumentException;
 use PhpOffice\PhpWord\IOFactory;
+use RuntimeException;
 use ZipArchive;
 
 class Word implements TextLoader
 {
+    protected const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
     protected function loadTextFromDocx(string $data): ?string
     {
-        $tempFile = tempnam(sys_get_temp_dir(), 'receipt_parser_zip_');
-        file_put_contents($tempFile, $data);
+        $this->validateSize($data);
 
-        $zip = new ZipArchive;
+        $tempFile = tempnam(sys_get_temp_dir(), 'extractor_docx_');
 
-        if ($zip->open($tempFile) !== true) {
-            unlink($tempFile);
-
-            return null;
+        if ($tempFile === false) {
+            throw new RuntimeException('Failed to create temporary file');
         }
-
-        $xmlIndex = $zip->locateName('word/document.xml');
-
-        if ($xmlIndex === false) {
-            $zip->close();
-            unlink($tempFile);
-
-            return null;
-        }
-
-        $replacements = [
-            // Replace <w:p> tags with newlines
-            '/<w:p w[0-9-Za-z]+:[a-zA-Z0-9]+="[a-zA-z"0-9 :="]+">/' => "\n\r",
-
-            // Replace <w:tr> tags with newlines
-            '/<w:tr>/' => "\n\r",
-
-            // Replace <w:tab/> tags with tabs
-            '/<w:tab\/>/' => "\t",
-
-            // Replace </w:p> tags with newlines
-            '/<\/w:p>/' => "\n\r",
-        ];
-
-        $replacedData = preg_replace(
-            pattern: array_keys($replacements),
-            replacement: array_values($replacements),
-            subject: $zip->getFromIndex($xmlIndex)
-        );
-
-        $zip->close();
-        unlink($tempFile);
-
-        return strip_tags($replacedData);
-
-    }
-
-    protected function loadTextFromDoc($data): ?string
-    {
-        $tempFile = tempnam(sys_get_temp_dir(), 'word_doc_parser_');
-        file_put_contents($tempFile, $data);
 
         try {
-            // Method 1: Try PHPWord if available
+            if (file_put_contents($tempFile, $data) === false) {
+                throw new RuntimeException('Failed to write temporary file');
+            }
+
+            $zip = new ZipArchive;
+
+            if ($zip->open($tempFile) !== true) {
+                return null;
+            }
+
+            try {
+                $xmlIndex = $zip->locateName('word/document.xml');
+
+                if ($xmlIndex === false) {
+                    return null;
+                }
+
+                $replacements = [
+                    '/<w:p w[0-9-Za-z]+:[a-zA-Z0-9]+="[a-zA-z"0-9 :="]+">/' => "\n\r",
+                    '/<w:tr>/' => "\n\r",
+                    '/<w:tab\/>/' => "\t",
+                    '/<\/w:p>/' => "\n\r",
+                ];
+
+                $replacedData = preg_replace(
+                    pattern: array_keys($replacements),
+                    replacement: array_values($replacements),
+                    subject: $zip->getFromIndex($xmlIndex)
+                );
+
+                return strip_tags($replacedData);
+            } finally {
+                $zip->close();
+            }
+        } finally {
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
+        }
+    }
+
+    protected function loadTextFromDoc(mixed $data): ?string
+    {
+        if (! is_string($data)) {
+            return null;
+        }
+
+        $this->validateSize($data);
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'extractor_doc_');
+
+        if ($tempFile === false) {
+            throw new RuntimeException('Failed to create temporary file');
+        }
+
+        try {
+            if (file_put_contents($tempFile, $data) === false) {
+                throw new RuntimeException('Failed to write temporary file');
+            }
+
             $text = $this->loadTextFromDocUsingPhpWord($tempFile);
             if ($text !== null && trim($text) !== '') {
                 return trim($text);
             }
 
-            // Method 2: Fallback to original naive method
             return $this->loadTextFromDocNaive($data);
         } finally {
             if (file_exists($tempFile)) {
@@ -103,13 +124,13 @@ class Word implements TextLoader
                 }
             }
 
-            return $text ? trim($text) : null;
-        } catch (\Exception $e) {
+            return $text !== '' ? trim($text) : null;
+        } catch (Exception $e) {
             return null;
         }
     }
 
-    protected function loadTextFromDocNaive($data): ?string
+    protected function loadTextFromDocNaive(string $data): ?string
     {
         $text = '';
         $lines = explode(chr(0x0D), $data);
@@ -125,9 +146,21 @@ class Word implements TextLoader
 
     public function load(mixed $data): ?TextContent
     {
-        // TODO(27 May 2023) ~ Helge: Detect filetype by magic file header or something
+        if (! is_string($data)) {
+            throw new InvalidArgumentException('Word loader expects string data');
+        }
+
         $text = $this->loadTextFromDocx($data) ?? $this->loadTextFromDoc($data);
 
-        return $text ? new TextContent($text) : null;
+        return $text !== null ? new TextContent($text) : null;
+    }
+
+    protected function validateSize(string $data): void
+    {
+        if (strlen($data) > self::MAX_FILE_SIZE) {
+            throw new InvalidArgumentException(
+                'Document size exceeds maximum of '.self::MAX_FILE_SIZE.' bytes'
+            );
+        }
     }
 }
