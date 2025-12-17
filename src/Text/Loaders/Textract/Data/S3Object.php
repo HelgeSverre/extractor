@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelgeSverre\Extractor\Text\Loaders\Textract\Data;
 
 class S3Object
 {
     public function __construct(
-        readonly public string $bucket,
-        readonly public string $name,
-        readonly public ?string $version = null
+        public readonly string $bucket,
+        public readonly string $name,
+        public readonly ?string $version = null
     ) {}
 
     public function getClientRequestToken(): string

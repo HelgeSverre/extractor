@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelgeSverre\Extractor\Text;
 
 use BrandEmbassy\FileTypeDetector\Detector;
@@ -37,7 +39,7 @@ class ImageContent extends TextContent
 
     public function isUrl(): bool
     {
-        return $this->type == self::TYPE_URL;
+        return $this->type === self::TYPE_URL;
     }
 
     public function isBase64able(): bool
@@ -47,12 +49,12 @@ class ImageContent extends TextContent
 
     public function isFile(): bool
     {
-        return $this->type == self::TYPE_FILE;
+        return $this->type === self::TYPE_FILE;
     }
 
     public function isRaw(): bool
     {
-        return $this->type == self::TYPE_RAW;
+        return $this->type === self::TYPE_RAW;
     }
 
     public function content(): ?string
