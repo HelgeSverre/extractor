@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelgeSverre\Extractor\Text\Loaders\Textract;
 
 use HelgeSverre\Extractor\Contracts\TextLoader;
