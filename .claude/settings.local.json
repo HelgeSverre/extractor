@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(src/ContactDto.php )",
+      "Bash(src/Contracts/Engine.php )",
+      "Bash(src/Contracts/TextLoader.php )",
+      "Bash(src/Exceptions/InvalidJsonReturnedError.php )",
+      "Bash(src/Extraction/Builtins/Contacts.php )",
+      "Bash(src/Extraction/Builtins/Fields.php )",
+      "Bash(src/Extraction/Builtins/Receipt.php )",
+      "Bash(src/Extraction/Builtins/Simple.php )",
+      "Bash(src/Extraction/Concerns/HasDto.php )",
+      "Bash(src/Extraction/Concerns/HasValidation.php )",
+      "Bash(src/ExtractorManager.php )",
+      "Bash(src/Facades/Extractor.php )",
+      "Bash(src/Facades/Text.php )",
+      "Bash(src/Text/Loaders/Html.php )",
+      "Bash(src/Text/Loaders/Pdf.php )",
+      "Bash(src/Text/Loaders/Rtf.php )",
+      "Bash(src/Text/Loaders/Text.php )",
+      "Bash(src/Text/Loaders/Textract/Data/Block.php )",
+      "Bash(src/Text/Loaders/Textract/Data/Response.php )",
+      "Bash(src/Text/Loaders/Textract/Exceptions/TextractConfigNotFoundException.php )",
+      "Bash(src/Text/Loaders/Textract/Exceptions/TextractFailed.php )",
+      "Bash(src/Text/Loaders/Textract/Exceptions/TextractStorageException.php )",
+      "Bash(src/Text/Loaders/Textract/Exceptions/TextractTimedOut.php )",
+      "Bash(src/Text/Loaders/Textract/Exceptions/TextractUnhandledStatus.php )",
+      "Bash(src/Text/Loaders/Textract/Status.php )",
+      "Bash(src/Text/Loaders/Textract/Textract.php )",
+      "Bash(src/Text/Loaders/Textract/TextractService.php )",
+      "Bash(src/Text/Loaders/Textract/TextractUsingS3Upload.php )",
+      "Bash(src/Text/Loaders/Web.php )",
+      "Bash(src/Text/TextContent.php )",
+      "Bash(src/Text/Utils.php)"
+    ],
+    "deny": []
+  }
+}
