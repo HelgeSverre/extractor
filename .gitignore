@@ -1,13 +1,30 @@
+# IDE
 .idea
+
+# Build/Cache
 .phpunit.cache
 build
-composer.lock
 coverage
-docs
+
+# Dependencies
+vendor
+node_modules
+composer.lock
+
+# Config (generated/local)
 phpunit.xml
 phpstan.neon
 testbench.yaml
-vendor
-node_modules
+
+# Documentation (generated)
+docs
+
+# Environment
 .env
 .env.test
+
+# Test artifacts
+wip
+
+# OS
+.DS_Store
