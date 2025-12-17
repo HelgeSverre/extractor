@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelgeSverre\Extractor\Text;
 
 use HelgeSverre\Extractor\Contracts\TextLoader;
@@ -43,11 +45,11 @@ class Factory
             blank($content) => null,
             Str::contains($mime, 'image') => rescue(
                 callback: fn () => $this->textract($content),
-                rescue: $this->textractUsingS3Upload($content)
+                rescue: fn () => $this->textractUsingS3Upload($content)
             ),
             Str::contains($mime, 'pdf') => rescue(
                 callback: fn () => $this->pdf($content),
-                rescue: $this->textractUsingS3Upload($content)
+                rescue: fn () => $this->textractUsingS3Upload($content)
             ),
             Str::contains($mime, ['xml', 'html']) => $this->html($content),
             Str::contains($mime, 'text/plain') => $this->text($content),
