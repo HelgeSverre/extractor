@@ -553,6 +553,40 @@ Controls the randomness/creativity of the model's output.
 A higher value (e.g., 0.8) makes the output more random, which is usually not desired in this context. A recommended
 value is 0.1 or 0.2; anything over 0.5 tends to be less useful. The default is `0.1`.
 
+## Development
+
+This project uses [just](https://just.systems/) as a command runner for development tasks:
+
+```bash
+# Show all available commands
+just help
+
+# Install dependencies
+just install
+
+# Run tests
+just test                 # All tests
+just test-unit            # Unit tests only
+just test-feature         # Feature tests only
+just coverage             # Tests with coverage report
+
+# Code quality
+just format               # Format code with Laravel Pint
+just check                # Format + test
+
+# Full workflow
+just workflow             # Install, format, test
+```
+
+You can also use composer directly:
+
+```bash
+composer test             # Run tests
+composer format           # Format code
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+
 ## License
 
 This package is licensed under the MIT License. For more details, refer to the [License File](LICENSE.md).

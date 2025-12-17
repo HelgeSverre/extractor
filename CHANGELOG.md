@@ -7,12 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-12-17
+
 ### Added
 - Added `declare(strict_types=1)` to all source files for improved type safety
 - Added comprehensive test suite with 127+ tests covering Engine, ExtractorManager, Extractors, and Text loaders
 - Added Laravel 10/11/12 integration test script (`test-laravel-install.sh`)
 - Added file size validation in Word loader (50MB limit)
 - Added proper error messages for vision model input validation
+- Added justfile for simplified development commands
+- Added CONTRIBUTING.md with contributor guidelines
+- Added pint.json for consistent code formatting configuration
+- Added support for custom OpenAI API endpoints (Ollama, Together.ai, Groq, Azure)
 
 ### Changed
 - Improved JSON decode error handling with `json_last_error_msg()` for better debugging
@@ -21,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved temp file cleanup with try-finally blocks in Word loader
 - Updated temp file prefixes from legacy names to `extractor_*`
 - Fixed `Extractor::prompt()` to explicitly call `->render()` on View objects
+- Reorganized test structure into Unit/Feature/Integration directories
+- Updated CLAUDE.md with comprehensive architecture documentation
 
 ### Fixed
 - Fixed placeholder exception message in `Engine.php` for vision model errors
@@ -170,7 +178,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Spatie/data DTO integration
 - Built-in extractors: Fields, Contacts, Receipt
 
-[Unreleased]: https://github.com/HelgeSverre/extractor/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/HelgeSverre/extractor/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/HelgeSverre/extractor/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/HelgeSverre/extractor/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/HelgeSverre/extractor/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/HelgeSverre/extractor/compare/v0.2.0...v0.2.1
