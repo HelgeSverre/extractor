@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelgeSverre\Extractor\Extraction\Concerns;
 
 use HelgeSverre\Extractor\Exceptions\InvalidJsonReturnedError;
@@ -58,8 +60,10 @@ trait DecodesResponse
 
             $decoded = json_decode($maybeJson, true);
 
-            if ($decoded === null && $this->throwsOnInvalidJsonResponse()) {
-                throw new InvalidJsonReturnedError("Invalid JSON returned:\n$response");
+            if (json_last_error() !== JSON_ERROR_NONE && $this->throwsOnInvalidJsonResponse()) {
+                throw new InvalidJsonReturnedError(
+                    'Invalid JSON returned: '.json_last_error_msg()."\nResponse:\n$response"
+                );
             }
 
             $key = $this->expectedOutputKey();
