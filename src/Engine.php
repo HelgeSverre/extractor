@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelgeSverre\Extractor;
 
 use HelgeSverre\Extractor\Extraction\Extractor;
@@ -93,7 +95,10 @@ class Engine
                                     'url' => match (true) {
                                         $input instanceof ImageContent && $input->isUrl() => $input->content(),
                                         $input instanceof ImageContent && $input->isBase64able() => $input->toBase64Url(),
-                                        default => throw new InvalidArgumentException('TODO: replace this exception message')
+                                        default => throw new InvalidArgumentException(
+                                            'Invalid input type for vision model. Expected ImageContent with URL or base64-encodable content, got: '.
+                                            ($input instanceof ImageContent ? 'ImageContent('.$input->type().')' : gettype($input))
+                                        )
                                     },
                                 ],
                             ],

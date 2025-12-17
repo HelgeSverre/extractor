@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HelgeSverre\Extractor\Extraction;
 
 use HelgeSverre\Extractor\Extraction\Concerns\DecodesResponse;
@@ -70,10 +72,10 @@ abstract class Extractor
 
     public function prompt(string|TextContent $input): string
     {
-        return $this->view($this->prepareInput(array_merge(['input' => $input], $this->config)));
+        return $this->view($this->prepareInput(array_merge(['input' => $input], $this->config)))->render();
     }
 
-    public function view($input): View
+    public function view(array $input): View
     {
         return view($this->viewName(), $input);
     }
