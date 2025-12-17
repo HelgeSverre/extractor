@@ -104,5 +104,5 @@ it('can scrape car data from finn.no car listing with field extraction using gpt
         ->and($data['sellerName'])->toBe('HAAVELMOEN BRUKTBILSALG')
         ->and($data['sellerPhone'])->toBe('41692829')
         ->and($data['sellerAddress'])->toBe('Hengsrudveien, 3178 Våle')
-        ->and($data['finnCode'])->toBe('331004985');
+        ->and((string) $data['finnCode'])->toBe('331004985');
 });
