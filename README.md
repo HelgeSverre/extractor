@@ -85,6 +85,52 @@ OPENAI_API_KEY="your-key-here"
 OPENAI_REQUEST_TIMEOUT=60
 ```
 
+## Using a Custom OpenAI Endpoint
+
+If you need to use a different OpenAI-compatible API endpoint (such as Ollama, Together.ai, Groq, or other providers), you can set the `OPENAI_BASE_URI` environment variable:
+
+```dotenv
+# For Ollama
+OPENAI_BASE_URI="http://localhost:11434/v1"
+
+# For Together.ai
+OPENAI_BASE_URI="https://api.together.xyz/v1"
+
+# For Groq
+OPENAI_BASE_URI="https://api.groq.com/openai/v1"
+```
+
+### Azure OpenAI
+
+For Azure OpenAI, you'll need more customization (custom headers and query parameters). Override the OpenAI client binding in your `AppServiceProvider`:
+
+```php
+// app/Providers/AppServiceProvider.php
+
+use OpenAI;
+use OpenAI\Client;
+use OpenAI\Contracts\ClientContract;
+
+public function register(): void
+{
+    $this->app->singleton(ClientContract::class, function (): Client {
+        return OpenAI::factory()
+            ->withBaseUri(env('AZURE_OPENAI_ENDPOINT') . '/openai/deployments/' . env('AZURE_OPENAI_DEPLOYMENT'))
+            ->withHttpHeader('api-key', env('AZURE_OPENAI_API_KEY'))
+            ->withQueryParam('api-version', env('AZURE_OPENAI_API_VERSION', '2024-02-01'))
+            ->withHttpClient(new \GuzzleHttp\Client(['timeout' => config('openai.request_timeout', 30)]))
+            ->make();
+    });
+}
+```
+
+```dotenv
+AZURE_OPENAI_ENDPOINT="https://your-resource.openai.azure.com"
+AZURE_OPENAI_DEPLOYMENT="gpt-4"
+AZURE_OPENAI_API_KEY="your-azure-api-key"
+AZURE_OPENAI_API_VERSION="2024-02-01"
+```
+
 ## Usage
 
 ### Extracting plain text from documents
