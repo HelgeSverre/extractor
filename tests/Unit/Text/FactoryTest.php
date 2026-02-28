@@ -138,6 +138,26 @@ describe('Text Factory', function () {
         });
     });
 
+    describe('fromMime with word documents', function () {
+        it('uses word loader for application/msword', function () {
+            $factory = app(Factory::class);
+            $docContent = file_get_contents(__DIR__.'/../../samples/word-document.doc');
+            $result = $factory->fromMime('application/msword', $docContent);
+
+            expect($result)->not->toBeNull();
+            expect($result->toString())->toContain('Mauris');
+        });
+
+        it('uses word loader for docx mime type', function () {
+            $factory = app(Factory::class);
+            $docxContent = file_get_contents(__DIR__.'/../../samples/contract.docx');
+            $result = $factory->fromMime('application/vnd.openxmlformats-officedocument.wordprocessingml.document', $docxContent);
+
+            expect($result)->not->toBeNull();
+            expect($result->toString())->toContain('Contract');
+        });
+    });
+
     describe('Macroable trait', function () {
         it('allows extending with macros', function () {
             Factory::macro('customMethod', function () {

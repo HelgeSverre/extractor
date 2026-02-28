@@ -104,4 +104,49 @@ describe('ImageContent', function () {
             expect($image->toBase64Url())->toBe('data:image/png;base64,'.base64_encode('Hello World'));
         });
     });
+
+    describe('imageData', function () {
+        it('returns raw content directly for raw type', function () {
+            $image = ImageContent::raw('raw image bytes');
+
+            expect($image->imageData())->toBe('raw image bytes');
+        });
+
+        it('reads file contents for file type', function () {
+            $path = __DIR__.'/../../samples/grocery-receipt-norwegian-spar.jpg';
+            $image = ImageContent::file($path);
+
+            expect($image->imageData())->toBe(file_get_contents($path));
+        });
+    });
+
+    describe('mime detection', function () {
+        it('returns null for url type without explicit mime', function () {
+            $image = ImageContent::url('https://example.com/image.jpg');
+
+            expect($image->mime())->toBeNull();
+        });
+
+        it('returns explicit mime when provided', function () {
+            $image = ImageContent::url('https://example.com/image.jpg');
+            $imageWithMime = ImageContent::file('/path/to/file.png', 'image/png');
+
+            expect($image->mime())->toBeNull();
+            expect($imageWithMime->mime())->toBe('image/png');
+        });
+    });
+
+    describe('inherits TextContent', function () {
+        it('can be cast to string', function () {
+            $image = ImageContent::url('https://example.com/image.jpg');
+
+            expect((string) $image)->toBe('https://example.com/image.jpg');
+        });
+
+        it('content() returns the stored value', function () {
+            $image = ImageContent::raw('bytes');
+
+            expect($image->content())->toBe('bytes');
+        });
+    });
 });

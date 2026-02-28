@@ -14,6 +14,23 @@ describe('ExtractorManager', function () {
 
             expect(true)->toBeTrue();
         });
+
+        it('resolves a custom extractor registered via extend', function () {
+            $manager = app(ExtractorManager::class);
+
+            $manager->extend('custom-fields', function () {
+                return new Fields(['custom_key' => 'custom_value']);
+            });
+
+            $reflection = new ReflectionClass($manager);
+            $method = $reflection->getMethod('resolveExtractor');
+            $method->setAccessible(true);
+
+            $extractor = $method->invoke($manager, 'custom-fields');
+
+            expect($extractor)->toBeInstanceOf(Fields::class);
+            expect($extractor->config('custom_key'))->toBe('custom_value');
+        });
     });
 
     describe('resolveExtractor', function () {
@@ -113,6 +130,32 @@ describe('ExtractorManager', function () {
 
             expect($modelParam)->not->toBeNull();
             expect($modelParam->isDefaultValueAvailable())->toBeTrue();
+            expect($modelParam->getDefaultValue())->toBeNull();
+            expect($modelParam->allowsNull())->toBeTrue();
+        });
+    });
+
+    describe('defaultModel', function () {
+        it('returns gpt-4o-mini by default', function () {
+            $manager = app(ExtractorManager::class);
+
+            $reflection = new ReflectionClass($manager);
+            $method = $reflection->getMethod('defaultModel');
+            $method->setAccessible(true);
+
+            expect($method->invoke($manager))->toBe('gpt-4o-mini');
+        });
+
+        it('returns configured model when extractor.model config is set', function () {
+            config(['extractor.model' => 'gpt-4o']);
+
+            $manager = app(ExtractorManager::class);
+
+            $reflection = new ReflectionClass($manager);
+            $method = $reflection->getMethod('defaultModel');
+            $method->setAccessible(true);
+
+            expect($method->invoke($manager))->toBe('gpt-4o');
         });
     });
 });
