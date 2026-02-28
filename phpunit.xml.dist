@@ -16,8 +16,15 @@
     backupStaticProperties="false"
 >
     <testsuites>
-        <testsuite name="HelgeSverre Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+            <file>tests/ArchTest.php</file>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
         </testsuite>
     </testsuites>
     <coverage>

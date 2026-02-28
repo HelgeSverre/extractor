@@ -27,10 +27,15 @@ env:
 # Testing
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Run all tests
+# Run unit tests (fast, no external services)
 [group('test')]
 test:
     composer test
+
+# Run all tests (unit + feature + integration)
+[group('test')]
+test-all:
+    composer test:all
 
 # Run tests with coverage report (uses herd if available for pcov extension)
 [group('test')]
@@ -56,17 +61,17 @@ test-filter filter:
 # Run unit tests only
 [group('test')]
 test-unit:
-    vendor/bin/pest tests/Unit/
+    composer test
 
-# Run feature tests only
+# Run feature tests only (requires OPENAI_API_KEY)
 [group('test')]
 test-feature:
-    vendor/bin/pest tests/Feature/
+    composer test:feature
 
-# Run integration tests only
+# Run integration tests only (requires Ollama)
 [group('test')]
 test-integration:
-    vendor/bin/pest tests/Integration/
+    composer test:integration
 
 # Test Laravel integration across versions 10, 11, 12
 [group('test')]

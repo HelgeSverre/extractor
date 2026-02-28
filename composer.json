@@ -68,7 +68,10 @@
             "@php vendor/bin/testbench serve"
         ],
         "analyse": "vendor/bin/phpstan analyse",
-        "test": "vendor/bin/pest",
+        "test": "vendor/bin/pest --testsuite=Unit",
+        "test:feature": "vendor/bin/pest --testsuite=Feature",
+        "test:integration": "vendor/bin/pest --testsuite=Integration",
+        "test:all": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
         "format": "vendor/bin/pint",
         "serve": [
