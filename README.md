@@ -148,11 +148,11 @@ $textHtml = Text::html(file_get_contents('./data.html'));
 ```
 
 | Description                                                                                                                                                                                                   | Method                        |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
 | Extract text from a plain text, useful if you need trim/normalize whitespace in a string.                                                                                                                     | `Text::text`                  |
 | Extract text from a PDF file, uses [smalot/pdfparser](https://github.com/smalot/pdfparser)                                                                                                                    | `Text::pdf`                   |
 | Extract text with [AWS Textract](https://aws.amazon.com/textract/) by sending the content as a base64 encoded string (faster, but has [limitations](https://docs.aws.amazon.com/textract/latest/dg/sync.html) | `Text::textract`              |
-| Extract text with [AWS Textract](https://aws.amazon.com/textract/) by uploading file to S3 and polling for completion (handles larger files and multi-page PDFs)                                              | `Text::textractUsingS3Upload` | 
+| Extract text with [AWS Textract](https://aws.amazon.com/textract/) by uploading file to S3 and polling for completion (handles larger files and multi-page PDFs)                                              | `Text::textractUsingS3Upload` |
 | Extract plain text from a Word document (Uses simple xml parsing and unzipping)                                                                                                                               | `Text::word`                  |
 | Fetches HTML from an URL via HTTP, strip all HTML tags, squish and trim all whitespace.                                                                                                                       | `Text::web`                   |
 | Extract text from an HTML file (same, but for HTML content)                                                                                                                                                   | `Text::html`                  |
@@ -165,7 +165,7 @@ types of information. Below is a list of the included extractors along with brie
 methods for each:
 
 | Example                                                          | Extractor | Description                                                                                                         |
-|------------------------------------------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------|
+| ---------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------- |
 | `Extractor::extract(Contacts::class, $text);`                    | Contacts  | Extracts a list of contacts (name, title, email, phone).                                                            |
 | `Extractor::extract(Receipt::class, $text);`                     | Receipt   | Extracts common Receipt data, See [receipt-scanner](https://github.com/HelgeSverre/receipt-scanner) for details.    |
 | `Extractor::fields($text, fields: ["name","address", "phone"]);` | Fields    | Extracts arbitrary fields provided as an array of output key, and optional description, also supports nested fields |
@@ -313,7 +313,7 @@ class JobPostingExtractor extends Extractor
 ```
 
 **Note**: Adding an instruction on which `$outputKey` key to nest the data under is recommended, as the JsonMode
-response from OpenAI end to want to put everything under a root key, by overriding the   `expectedOutputKey()` method,
+response from OpenAI end to want to put everything under a root key, by overriding the `expectedOutputKey()` method,
 it will tell the base Extractor class which key to pull the data from.
 
 ### Registering the Custom Extractor
@@ -423,7 +423,7 @@ class JobPostingExtractor extends Extractor
 
     public function isCollection(): bool
     {
-        return false; 
+        return false;
     }
 }
 ```
@@ -445,7 +445,7 @@ TEXTRACT_VERSION="2018-06-27"
 ```
 
 You also need to configure a seperate Textract disk where the files will be stored,
-open your  `config/filesystems.php` configuration file and add the following:
+open your `config/filesystems.php` configuration file and add the following:
 
 ```php
 'textract' => [
@@ -484,7 +484,7 @@ https://repost.aws/knowledge-center/s3-empty-bucket-lifecycle-rule
 
 #### Using the `cleanupFileUsing` hook
 
-By default, the package will __NOT__ delete the files that has been uploaded in the textract S3 bucket, if you want to
+By default, the package will **NOT** delete the files that has been uploaded in the textract S3 bucket, if you want to
 delete these files, you can implement this using the `TextractUsingS3Upload::cleanupFileUsing(Closure)` hook.
 
 ```php
@@ -523,7 +523,7 @@ convenience, most of the accepted models are provided as constants on the `Engin
 Available Models:
 
 | Model Identifier               | Model                      | Note                                                                                                                                                                                           |
-|--------------------------------|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------------ | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Engine::GPT_4_OMNI_MINI`      | 'gpt-4o-mini'              | Optimized version of GPT-4 with enhanced JSON mode capabilities                                                                                                                                |
 | `Engine::GPT_4_OMNI`           | 'gpt-4o'                   | Enhanced GPT-4 model with improved JSON mode and vision capabilities                                                                                                                           |
 | `Engine::GPT_4_TURBO`          | 'gpt-4-turbo'              | Latest GPT-4 model optimized for performance and efficiency                                                                                                                                    |

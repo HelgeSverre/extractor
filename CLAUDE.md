@@ -84,16 +84,16 @@ This is a Laravel package that provides AI-powered data extraction using OpenAI'
 2. **ExtractorManager (`src/ExtractorManager.php`)**: Main entry point via the `Extractor` facade. Manages extractor registration (`extend()`), resolution, and execution. Delegates actual AI calls to the Engine.
 
 3. **Extractor Pipeline (`src/Extraction/Extractor.php`)**: Base class for all extractors using a template method pattern:
-   - `preprocess($input)` → Transform input before AI processing (via registered preprocessors)
-   - `prompt($input)` → Generate AI prompt using Blade templates
-   - Engine execution → Send to OpenAI API
-   - `process($response)` → Transform AI response into desired format (via registered processors)
+    - `preprocess($input)` → Transform input before AI processing (via registered preprocessors)
+    - `prompt($input)` → Generate AI prompt using Blade templates
+    - Engine execution → Send to OpenAI API
+    - `process($response)` → Transform AI response into desired format (via registered processors)
 
 4. **Text Loading System (`src/Text/`)**: Factory pattern for loading various file formats:
-   - `Factory` class provides `create(type)` and convenience methods (`pdf()`, `html()`, etc.)
-   - `TextLoader` interface implemented by format-specific loaders
-   - Supports PDF, Word, RTF, HTML, images, and web content
-   - AWS Textract integration for OCR functionality
+    - `Factory` class provides `create(type)` and convenience methods (`pdf()`, `html()`, etc.)
+    - `TextLoader` interface implemented by format-specific loaders
+    - Supports PDF, Word, RTF, HTML, images, and web content
+    - AWS Textract integration for OCR functionality
 
 ### Extension Points
 
@@ -104,14 +104,14 @@ This is a Laravel package that provides AI-powered data extraction using OpenAI'
 
 ### Design Patterns Used
 
-| Pattern | Implementation | Location |
-|---------|---------------|----------|
-| **Strategy** | Different extraction strategies via Extractor subclasses | `src/Extraction/Builtins/` |
-| **Factory** | TextLoader factory creates appropriate loaders by type/MIME | `src/Text/Factory.php` |
-| **Template Method** | Extractor base class defines extraction workflow hooks | `src/Extraction/Extractor.php` |
-| **Facade** | Laravel facades for convenient static access | `src/Facades/` |
-| **Pipeline** | Composable processors/preprocessors with priority ordering | `src/Extraction/Extractor.php` |
-| **Trait Composition** | Mixins for validation, DTO conversion, response decoding | `src/Extraction/Concerns/` |
+| Pattern               | Implementation                                              | Location                       |
+| --------------------- | ----------------------------------------------------------- | ------------------------------ |
+| **Strategy**          | Different extraction strategies via Extractor subclasses    | `src/Extraction/Builtins/`     |
+| **Factory**           | TextLoader factory creates appropriate loaders by type/MIME | `src/Text/Factory.php`         |
+| **Template Method**   | Extractor base class defines extraction workflow hooks      | `src/Extraction/Extractor.php` |
+| **Facade**            | Laravel facades for convenient static access                | `src/Facades/`                 |
+| **Pipeline**          | Composable processors/preprocessors with priority ordering  | `src/Extraction/Extractor.php` |
+| **Trait Composition** | Mixins for validation, DTO conversion, response decoding    | `src/Extraction/Concerns/`     |
 
 ### Key Files
 
@@ -137,9 +137,9 @@ src/
 - Tests use Pest PHP framework with Laravel plugin
 - Real sample files are located in `tests/samples/`
 - Test structure:
-  - `tests/Unit/` - Unit tests (Engine, Extraction, Text loaders)
-  - `tests/Feature/` - Feature tests (Receipt, Field, Vision extraction)
-  - `tests/Integration/` - Integration tests (Ollama)
+    - `tests/Unit/` - Unit tests (Engine, Extraction, Text loaders)
+    - `tests/Feature/` - Feature tests (Receipt, Field, Vision extraction)
+    - `tests/Integration/` - Integration tests (Ollama)
 - Some tests require OpenAI API key (set `OPENAI_API_KEY` in `.env`)
 - Long-running OCR tests and flaky vision tests are skipped by default
 - Architecture tests prevent debugging functions in production code
@@ -180,11 +180,13 @@ TEXTRACT_TIMEOUT=60
 ### GitHub Releases
 
 **Release Titles:**
+
 - Use **version number only**: `v0.4.0`
 - Do NOT add emojis or extra text to the title
 - Save emojis and descriptive text for the release body/notes
 
 **Example:**
+
 ```bash
 # Correct
 gh release create v0.4.0 --title "v0.4.0"
