@@ -13,7 +13,7 @@ it('Can extract REMA offer catalog details data from an image', function () {
             'weight',
             'weight_unit',
         ],
-        model: Engine::GPT_4_OMNI,
+        model: Engine::GPT_4O,
         maxTokens: 500,
     );
 
@@ -33,7 +33,7 @@ it('Can extract BUNNPRIS offer catalog details data from an image', function () 
             'weight',
             'weight_unit',
         ],
-        model: Engine::GPT_4_OMNI,
+        model: Engine::GPT_4O,
     );
 
     expect($data)->toBeArray()
@@ -50,7 +50,7 @@ it('Can extract offer catalog from image url', function () {
             'weight',
             'weight_unit',
         ],
-        model: Engine::GPT_4_OMNI,
+        model: Engine::GPT_4O,
     );
 
     expect($data)->toBeArray()
