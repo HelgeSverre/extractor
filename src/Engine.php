@@ -10,49 +10,51 @@ use HelgeSverre\Extractor\Text\TextContent;
 use InvalidArgumentException;
 use OpenAI\Laravel\Facades\OpenAI;
 use OpenAI\Responses\Chat\CreateResponse as ChatResponse;
-use OpenAI\Responses\Completions\CreateResponse as CompletionResponse;
 
 class Engine
 {
-    // New
-    const GPT_4_OMNI_MINI = 'gpt-4o-mini';
+    // GPT-5 family
+    const GPT_5_2 = 'gpt-5.2';
 
-    /** @deprecated Aliased to GPT_4_OMNI_MINI, will be removed at some point. */
-    const GPT_4o = self::GPT_4_OMNI;
+    const GPT_5_1 = 'gpt-5.1';
 
-    const GPT_4_OMNI = 'gpt-4o';
+    const GPT_5 = 'gpt-5';
+
+    const GPT_5_MINI = 'gpt-5-mini';
+
+    // GPT-4.1 family
+    const GPT_4_1 = 'gpt-4.1';
+
+    const GPT_4_1_MINI = 'gpt-4.1-mini';
+
+    const GPT_4_1_NANO = 'gpt-4.1-nano';
+
+    // GPT-4o family
+    const GPT_4O = 'gpt-4o';
+
+    const GPT_4O_MINI = 'gpt-4o-mini';
 
     const GPT_4_TURBO = 'gpt-4-turbo';
 
-    const GPT_4_1106_PREVIEW = 'gpt-4-1106-preview';
+    // O-series (reasoning models)
+    const O3 = 'o3';
 
-    /** @deprecated */
-    const GPT_4_VISION = 'gpt-4-vision-preview';
+    const O3_MINI = 'o3-mini';
 
-    const GPT_3_TURBO_1106 = 'gpt-3.5-turbo-1106';
+    const O3_PRO = 'o3-pro';
 
-    const GPT_O1_MINI = 'o1-mini';
+    const O4_MINI = 'o4-mini';
 
-    const GPT_O1_PREVIEW = 'o1-preview';
+    // Deprecated aliases (kept for one release cycle, will be removed in v0.6.0)
 
-    // GPT-4
-    const GPT_4 = 'gpt-4';
+    /** @deprecated Use GPT_4O instead. Will be removed in v0.6.0. */
+    const GPT_4_OMNI = 'gpt-4o';
 
-    const GPT4_32K = 'gpt-4-32k';
+    /** @deprecated Use GPT_4O_MINI instead. Will be removed in v0.6.0. */
+    const GPT_4_OMNI_MINI = 'gpt-4o-mini';
 
-    // GPT-3.5
-    const GPT_3_TURBO_INSTRUCT = 'gpt-3.5-turbo-instruct';
-
-    const GPT_3_TURBO_16K = 'gpt-3.5-turbo-16k';
-
-    const GPT_3_TURBO = 'gpt-3.5-turbo';
-
-    // Legacy
-    /** @deprecated */
-    const TEXT_DAVINCI_003 = 'text-davinci-003';
-
-    /** @deprecated */
-    const TEXT_DAVINCI_002 = 'text-davinci-002';
+    /** @deprecated Use GPT_4O instead. Will be removed in v0.6.0. */
+    const GPT_4o = self::GPT_4O;
 
     public function run(
         Extractor $extractor,
@@ -65,162 +67,69 @@ class Engine
 
         $prompt = $extractor->prompt($preprocessed);
 
-        $response = match (true) {
-            // Legacy text completion models
-            $this->isCompletionModel($model) => OpenAI::completions()->create([
-                'model' => $model,
-                'max_tokens' => $maxTokens,
-                'temperature' => $temperature,
-                'prompt' => $prompt,
-            ]),
+        $messages = $this->buildMessages($extractor, $input, $prompt);
 
-            $this->isHybridModel($model) => $this->handleHybridModel($input, $prompt, $maxTokens, $temperature, $model),
+        $payload = [
+            'model' => $model,
+            'max_tokens' => $maxTokens,
+            'temperature' => $temperature,
+            'messages' => $messages,
+            'response_format' => ['type' => 'json_object'],
+        ];
 
-            // New json mode models.
-            $this->isVisionModel($model) => OpenAI::chat()->create([
-                'model' => $model,
-                'max_tokens' => $maxTokens,
-                'temperature' => $temperature,
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => [
-                            [
-                                'type' => 'text',
-                                'text' => $prompt,
-                            ],
-                            [
-                                'type' => 'image_url',
-                                'image_url' => [
-                                    'url' => match (true) {
-                                        $input instanceof ImageContent && $input->isUrl() => $input->content(),
-                                        $input instanceof ImageContent && $input->isBase64able() => $input->toBase64Url(),
-                                        default => throw new InvalidArgumentException(
-                                            'Invalid input type for vision model. Expected ImageContent with URL or base64-encodable content, got: '.
-                                            ($input instanceof ImageContent ? 'ImageContent('.$input->type().')' : gettype($input))
-                                        )
-                                    },
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ]),
-
-            $this->isJsonModeCompatibleModel($model) => OpenAI::chat()->create([
-                'model' => $model,
-                'max_tokens' => $maxTokens,
-                'temperature' => $temperature,
-                'response_format' => ['type' => 'json_object'],
-                'messages' => [[
-                    'role' => 'user',
-                    'content' => $prompt,
-                ]],
-            ]),
-
-            // Previous generation models
-            default => OpenAI::chat()->create([
-                'model' => $model,
-                'max_tokens' => $maxTokens,
-                'temperature' => $temperature,
-                'messages' => [[
-                    'role' => 'user',
-                    'content' => $prompt,
-                ]],
-            ]),
-        };
+        $response = OpenAI::chat()->create($payload);
 
         $text = $this->extractResponseText($response);
 
         return $extractor->process($text);
     }
 
-    public function isVisionModel(string $model): bool
+    protected function buildMessages(Extractor $extractor, TextContent|string $input, string $prompt): array
     {
-        return in_array($model, [
-            self::GPT_4_VISION,
-            self::GPT_4_OMNI,
-        ]);
-    }
+        $messages = [];
 
-    public function isCompletionModel(string $model): bool
-    {
-        return in_array($model, [
-            self::GPT_3_TURBO_INSTRUCT,
-            self::TEXT_DAVINCI_003,
-            self::TEXT_DAVINCI_002,
-        ]);
-    }
+        $systemPrompt = $extractor->systemPrompt();
+        if ($systemPrompt !== null && $systemPrompt !== '') {
+            $messages[] = [
+                'role' => 'system',
+                'content' => $systemPrompt,
+            ];
+        }
 
-    public function isJsonModeCompatibleModel(string $model): bool
-    {
-        return in_array($model, [
-            self::GPT_4_1106_PREVIEW,
-            self::GPT_3_TURBO_1106,
-            self::GPT_4_OMNI,
-            self::GPT_4_OMNI_MINI,
-        ]);
-    }
-
-    public function isHybridModel(string $model): bool
-    {
-        return $model === self::GPT_4o;
-    }
-
-    private function handleHybridModel($input, $prompt, $maxTokens, $temperature, $model): mixed
-    {
         if ($input instanceof ImageContent) {
-            return OpenAI::chat()->create([
-                'model' => $model,
-                'max_tokens' => $maxTokens,
-                'temperature' => $temperature,
-                'messages' => [
+            $messages[] = [
+                'role' => 'user',
+                'content' => [
                     [
-                        'role' => 'user',
-                        'content' => [
-                            [
-                                'type' => 'text',
-                                'text' => $prompt,
-                            ],
-                            [
-                                'type' => 'image_url',
-                                'image_url' => [
-                                    'url' => $input->isUrl()
-                                        ? $input->content()
-                                        : $input->toBase64Url(),
-                                ],
-                            ],
+                        'type' => 'text',
+                        'text' => $prompt,
+                    ],
+                    [
+                        'type' => 'image_url',
+                        'image_url' => [
+                            'url' => match (true) {
+                                $input->isUrl() => $input->content(),
+                                $input->isBase64able() => $input->toBase64Url(),
+                                default => throw new InvalidArgumentException(
+                                    'Invalid input type for vision model. Expected ImageContent with URL or base64-encodable content, got: ImageContent('.$input->type().')'
+                                )
+                            },
                         ],
                     ],
                 ],
-            ]);
-        } elseif (is_string($input) || $input instanceof TextContent) {
-            return OpenAI::chat()->create([
-                'model' => $model,
-                'max_tokens' => $maxTokens,
-                'temperature' => $temperature,
-                'messages' => [[
-                    'role' => 'user',
-                    'content' => $prompt,
-                ]],
-            ]);
+            ];
         } else {
-            throw new InvalidArgumentException('Unsupported input type for hybrid model');
+            $messages[] = [
+                'role' => 'user',
+                'content' => $prompt,
+            ];
         }
+
+        return $messages;
     }
 
-    public function isOhOne(string $model): bool
+    public function extractResponseText(ChatResponse $response): string
     {
-        return in_array($model, [
-            self::GPT_O1_MINI,
-            self::GPT_O1_PREVIEW,
-        ]);
-    }
-
-    public function extractResponseText(ChatResponse|CompletionResponse $response): mixed
-    {
-        return $response instanceof ChatResponse
-            ? $response->choices[0]->message->content
-            : $response->choices[0]->text;
+        return $response->choices[0]->message->content;
     }
 }
