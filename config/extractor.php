@@ -3,6 +3,30 @@
 return [
     /*
     |--------------------------------------------------------------------------
+    | Default Model
+    |--------------------------------------------------------------------------
+    |
+    | The default OpenAI model to use for extractions. This can be overridden
+    | per-extraction by passing the model parameter directly.
+    |
+    */
+
+    'model' => env('EXTRACTOR_MODEL', 'gpt-4o-mini'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default System Prompt
+    |--------------------------------------------------------------------------
+    |
+    | An optional system prompt sent with every extraction request.
+    | Individual extractors can override this via their systemPrompt() method.
+    |
+    */
+
+    'system_prompt' => env('EXTRACTOR_SYSTEM_PROMPT', 'You are a precise data extraction assistant. Always respond with valid JSON.'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Textract Timeout
     |--------------------------------------------------------------------------
     |

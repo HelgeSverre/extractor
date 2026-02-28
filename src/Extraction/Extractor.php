@@ -40,6 +40,11 @@ abstract class Extractor
         return $this->config('temperature');
     }
 
+    public function systemPrompt(): ?string
+    {
+        return $this->config('system_prompt') ?? config('extractor.system_prompt');
+    }
+
     protected function boot(): void
     {
         foreach (class_uses_recursive($this) as $trait) {
