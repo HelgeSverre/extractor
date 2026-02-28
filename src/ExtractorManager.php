@@ -26,7 +26,7 @@ class ExtractorManager
         string|Extractor $nameOrClass,
         TextContent|string $input,
         ?array $config = null,
-        string $model = 'gpt-3.5-turbo-1106',
+        ?string $model = null,
         int $maxTokens = 2000,
         float $temperature = 0.1,
     ): mixed {
@@ -39,9 +39,9 @@ class ExtractorManager
         return $this->engine->run(
             extractor: $extractor,
             input: $input,
-            model: $model ?? $extractor->model(),
-            maxTokens: $maxTokens ?? $extractor->maxTokens(),
-            temperature: $temperature ?? $extractor->temperature(),
+            model: $model ?? $extractor->model() ?? $this->defaultModel(),
+            maxTokens: $maxTokens,
+            temperature: $temperature,
         );
     }
 
@@ -49,20 +49,20 @@ class ExtractorManager
         string $view,
         TextContent|string $input,
         ?array $config = null,
-        string $model = 'gpt-3.5-turbo-1106',
+        ?string $model = null,
         int $maxTokens = 2000,
         float $temperature = 0.1,
     ): mixed {
-        $extractor = new Simple(array_merge($config, [
+        $extractor = new Simple(array_merge($config ?? [], [
             'view' => $view,
         ]));
 
         return $this->engine->run(
             extractor: $extractor,
             input: $input,
-            model: $model ?? $extractor->model(),
-            maxTokens: $maxTokens ?? $extractor->maxTokens(),
-            temperature: $temperature ?? $extractor->temperature(),
+            model: $model ?? $extractor->model() ?? $this->defaultModel(),
+            maxTokens: $maxTokens,
+            temperature: $temperature,
         );
     }
 
@@ -70,7 +70,7 @@ class ExtractorManager
         ImageContent|TextContent|string $input,
         array $fields,
         ?array $config = null,
-        string $model = 'gpt-3.5-turbo-1106',
+        ?string $model = null,
         int $maxTokens = 2000,
         float $temperature = 0.1,
     ): mixed {
@@ -85,30 +85,31 @@ class ExtractorManager
         return $this->engine->run(
             extractor: $extractor,
             input: $input,
-            model: $model ?? $extractor->model(),
-            maxTokens: $maxTokens ?? $extractor->maxTokens(),
-            temperature: $temperature ?? $extractor->temperature(),
+            model: $model ?? $extractor->model() ?? $this->defaultModel(),
+            maxTokens: $maxTokens,
+            temperature: $temperature,
         );
+    }
+
+    protected function defaultModel(): string
+    {
+        return config('extractor.model', 'gpt-4o-mini');
     }
 
     protected function resolveExtractor(string|Extractor $nameOrClass): Extractor
     {
-        // If it's already an instance of Extractor, return it.
         if ($nameOrClass instanceof Extractor) {
             return $nameOrClass;
         }
 
-        // If the given name is an alias registered with extend(), use it.
         if (isset($this->extractors[$nameOrClass])) {
             return call_user_func($this->extractors[$nameOrClass]);
         }
 
-        // Otherwise, assume it's a direct class name.
         if (! class_exists($nameOrClass)) {
             throw new Exception("Extractor class [$nameOrClass] not found.");
         }
 
-        // Try to resolve it from the container.
         return app($nameOrClass);
     }
 }
