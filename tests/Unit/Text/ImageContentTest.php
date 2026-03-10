@@ -136,6 +136,29 @@ describe('ImageContent', function () {
         });
     });
 
+    describe('detail parameter', function () {
+        it('defaults to auto', function () {
+            expect(ImageContent::url('https://example.com/image.jpg')->detail())->toBe('auto');
+            expect(ImageContent::file('/path/to/image.jpg')->detail())->toBe('auto');
+            expect(ImageContent::raw('bytes')->detail())->toBe('auto');
+        });
+
+        it('accepts custom detail level via url()', function () {
+            $image = ImageContent::url('https://example.com/image.jpg', detail: 'high');
+            expect($image->detail())->toBe('high');
+        });
+
+        it('accepts custom detail level via file()', function () {
+            $image = ImageContent::file('/path/to/image.jpg', detail: 'low');
+            expect($image->detail())->toBe('low');
+        });
+
+        it('accepts custom detail level via raw()', function () {
+            $image = ImageContent::raw('bytes', detail: 'original');
+            expect($image->detail())->toBe('original');
+        });
+    });
+
     describe('inherits TextContent', function () {
         it('can be cast to string', function () {
             $image = ImageContent::url('https://example.com/image.jpg');

@@ -26,5 +26,8 @@ docs
 # Test artifacts
 wip
 
+# Working documents
+findings.md
+
 # OS
 .DS_Store

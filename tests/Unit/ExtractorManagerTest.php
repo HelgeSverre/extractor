@@ -116,22 +116,26 @@ describe('ExtractorManager', function () {
             expect($params[0]->getType()->__toString())->toContain('Extractor');
         });
 
-        it('has default model parameter', function () {
+        it('has nullable default parameters', function () {
             $reflection = new ReflectionMethod(ExtractorManager::class, 'extract');
             $params = $reflection->getParameters();
 
-            $modelParam = null;
+            $paramsByName = [];
             foreach ($params as $param) {
-                if ($param->getName() === 'model') {
-                    $modelParam = $param;
-                    break;
-                }
+                $paramsByName[$param->getName()] = $param;
             }
 
-            expect($modelParam)->not->toBeNull();
-            expect($modelParam->isDefaultValueAvailable())->toBeTrue();
-            expect($modelParam->getDefaultValue())->toBeNull();
-            expect($modelParam->allowsNull())->toBeTrue();
+            // model is nullable with null default
+            expect($paramsByName['model']->allowsNull())->toBeTrue();
+            expect($paramsByName['model']->getDefaultValue())->toBeNull();
+
+            // maxTokens is nullable with null default
+            expect($paramsByName['maxTokens']->allowsNull())->toBeTrue();
+            expect($paramsByName['maxTokens']->getDefaultValue())->toBeNull();
+
+            // temperature is nullable with null default
+            expect($paramsByName['temperature']->allowsNull())->toBeTrue();
+            expect($paramsByName['temperature']->getDefaultValue())->toBeNull();
         });
     });
 

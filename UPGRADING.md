@@ -17,7 +17,7 @@ New keys in `config/extractor.php`:
 | Key             | Env Variable              | Default                                                                        |
 | --------------- | ------------------------- | ------------------------------------------------------------------------------ |
 | `model`         | `EXTRACTOR_MODEL`         | `gpt-4o-mini`                                                                  |
-| `system_prompt` | `EXTRACTOR_SYSTEM_PROMPT` | `You are a precise data extraction assistant. Always respond with valid JSON.` |
+| `system_prompt` | `EXTRACTOR_SYSTEM_PROMPT` | `null` (disabled by default) |
 
 ---
 
@@ -157,22 +157,14 @@ public function extractResponseText(ChatResponse $response): string
 
 ---
 
-## 6. System Prompts Included by Default
+## 6. System Prompt Support (Opt-In)
 
-All extraction requests now include a system prompt. This improves extraction quality and JSON reliability.
+v0.5.0 adds support for system prompts in extraction requests. System prompts are **disabled by default** — set the `EXTRACTOR_SYSTEM_PROMPT` env var to enable.
 
-**Default system prompt:**
-
-> You are a precise data extraction assistant. Always respond with valid JSON.
-
-**Customization options:**
+**Recommended system prompt:**
 
 ```dotenv
-# Change the default system prompt
-EXTRACTOR_SYSTEM_PROMPT="Your custom system prompt here"
-
-# Disable system prompts entirely
-EXTRACTOR_SYSTEM_PROMPT=""
+EXTRACTOR_SYSTEM_PROMPT="You are a precise data extraction assistant. Always respond with valid JSON."
 ```
 
 Or in `config/extractor.php`:

@@ -27,8 +27,8 @@ class ExtractorManager
         TextContent|string $input,
         ?array $config = null,
         ?string $model = null,
-        int $maxTokens = 2000,
-        float $temperature = 0.1,
+        ?int $maxTokens = null,
+        ?float $temperature = null,
     ): mixed {
         $extractor = $this->resolveExtractor($nameOrClass);
 
@@ -40,8 +40,8 @@ class ExtractorManager
             extractor: $extractor,
             input: $input,
             model: $model ?? $extractor->model() ?? $this->defaultModel(),
-            maxTokens: $maxTokens,
-            temperature: $temperature,
+            maxTokens: $maxTokens ?? $extractor->maxTokens() ?? 2000,
+            temperature: $temperature ?? $extractor->temperature() ?? 0.1,
         );
     }
 
@@ -50,8 +50,8 @@ class ExtractorManager
         TextContent|string $input,
         ?array $config = null,
         ?string $model = null,
-        int $maxTokens = 2000,
-        float $temperature = 0.1,
+        ?int $maxTokens = null,
+        ?float $temperature = null,
     ): mixed {
         $extractor = new Simple(array_merge($config ?? [], [
             'view' => $view,
@@ -61,8 +61,8 @@ class ExtractorManager
             extractor: $extractor,
             input: $input,
             model: $model ?? $extractor->model() ?? $this->defaultModel(),
-            maxTokens: $maxTokens,
-            temperature: $temperature,
+            maxTokens: $maxTokens ?? $extractor->maxTokens() ?? 2000,
+            temperature: $temperature ?? $extractor->temperature() ?? 0.1,
         );
     }
 
@@ -71,8 +71,8 @@ class ExtractorManager
         array $fields,
         ?array $config = null,
         ?string $model = null,
-        int $maxTokens = 2000,
-        float $temperature = 0.1,
+        ?int $maxTokens = null,
+        ?float $temperature = null,
     ): mixed {
         $extractor = $this->resolveExtractor(Fields::class);
 
@@ -86,8 +86,8 @@ class ExtractorManager
             extractor: $extractor,
             input: $input,
             model: $model ?? $extractor->model() ?? $this->defaultModel(),
-            maxTokens: $maxTokens,
-            temperature: $temperature,
+            maxTokens: $maxTokens ?? $extractor->maxTokens() ?? 2000,
+            temperature: $temperature ?? $extractor->temperature() ?? 0.1,
         );
     }
 

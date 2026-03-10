@@ -158,7 +158,7 @@ try {
         \HelgeSverre\Extractor\Engine::GPT_4_OMNI,
         \HelgeSverre\Extractor\Engine::GPT_4_OMNI_MINI,
         \HelgeSverre\Extractor\Engine::GPT_4_TURBO,
-        \HelgeSverre\Extractor\Engine::GPT_3_TURBO_1106,
+        \HelgeSverre\Extractor\Engine::GPT_4O_MINI,
     ];
     echo "PASS: Engine model constants defined\n";
 

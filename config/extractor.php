@@ -20,10 +20,13 @@ return [
     |
     | An optional system prompt sent with every extraction request.
     | Individual extractors can override this via their systemPrompt() method.
+    | Set to null to disable, or provide a custom prompt.
+    |
+    | Recommended: 'You are a precise data extraction assistant. Always respond with valid JSON.'
     |
     */
 
-    'system_prompt' => env('EXTRACTOR_SYSTEM_PROMPT', 'You are a precise data extraction assistant. Always respond with valid JSON.'),
+    'system_prompt' => env('EXTRACTOR_SYSTEM_PROMPT'),
 
     /*
     |--------------------------------------------------------------------------

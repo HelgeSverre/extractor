@@ -197,7 +197,7 @@ $data = Extractor::fields($sample,
             'text',
         ],
     ],
-    model: Engine::GPT_3_TURBO_1106,
+    model: Engine::GPT_4O_MINI,
 );
 ```
 
@@ -522,23 +522,22 @@ convenience, most of the accepted models are provided as constants on the `Engin
 
 Available Models:
 
-| Model Identifier               | Model                      | Note                                                                                                                                                                                           |
-| ------------------------------ | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Engine::GPT_4_OMNI_MINI`      | 'gpt-4o-mini'              | Optimized version of GPT-4 with enhanced JSON mode capabilities                                                                                                                                |
-| `Engine::GPT_4_OMNI`           | 'gpt-4o'                   | Enhanced GPT-4 model with improved JSON mode and vision capabilities                                                                                                                           |
-| `Engine::GPT_4_TURBO`          | 'gpt-4-turbo'              | Latest GPT-4 model optimized for performance and efficiency                                                                                                                                    |
-| `Engine::GPT_4_1106_PREVIEW`   | 'gpt-4-1106-preview'       | GPT-4 Turbo, featuring improved instruction following, JSON mode, reproducible outputs, parallel function calling. Maximum 4,096 output tokens. Preview model, not yet for production traffic. |
-| `Engine::GPT_3_TURBO_1106`     | 'gpt-3.5-turbo-1106'       | Updated GPT-3.5 Turbo, with improvements similar to GPT-4 Turbo. Returns up to 4,096 output tokens.                                                                                            |
-| `Engine::GPT_O1_MINI`          | 'o1-mini'                  | Specialized model optimized for specific tasks                                                                                                                                                 |
-| `Engine::GPT_O1_PREVIEW`       | 'o1-preview'               | Preview version of the O1 model with enhanced capabilities                                                                                                                                     |
-| `Engine::GPT_4`                | 'gpt-4'                    | Large multimodal model, capable of solving complex problems with greater accuracy                                                                                                              |
-| `Engine::GPT4_32K`             | 'gpt-4-32k'                | Extended version of GPT-4 with a larger context window of 32,768 tokens                                                                                                                        |
-| `Engine::GPT_3_TURBO_INSTRUCT` | 'gpt-3.5-turbo-instruct'   | Similar to text-davinci-003, optimized for legacy Completions endpoint                                                                                                                         |
-| `Engine::GPT_3_TURBO_16K`      | 'gpt-3.5-turbo-16k'        | Extended version of GPT-3.5 Turbo, supporting a larger context window of 16,385 tokens                                                                                                         |
-| `Engine::GPT_3_TURBO`          | 'gpt-3.5-turbo'            | Optimized for chat using the Chat Completions API                                                                                                                                              |
-| `Engine::TEXT_DAVINCI_003`     | ~~'text-davinci-003'~~     | **DEPRECATED** - Legacy model, no longer operational                                                                                                                                           |
-| `Engine::TEXT_DAVINCI_002`     | ~~'text-davinci-002'~~     | **DEPRECATED** - Legacy model, no longer operational                                                                                                                                           |
-| `Engine::GPT_4_VISION`         | ~~'gpt-4-vision-preview'~~ | **DEPRECATED** Multimodal model capable of processing both text and images                                                                                                                     |
+| Model Identifier          | Model             | Note                                                                  |
+| ------------------------- | ----------------- | --------------------------------------------------------------------- |
+| `Engine::GPT_5_2`         | `gpt-5.2`         | Latest GPT-5 model                                                    |
+| `Engine::GPT_5_1`         | `gpt-5.1`         | GPT-5.1 model                                                        |
+| `Engine::GPT_5`           | `gpt-5`           | GPT-5 base model                                                     |
+| `Engine::GPT_5_MINI`      | `gpt-5-mini`      | Compact GPT-5 model, good balance of speed and quality                |
+| `Engine::GPT_4_1`         | `gpt-4.1`         | GPT-4.1 model with strong instruction following                      |
+| `Engine::GPT_4_1_MINI`    | `gpt-4.1-mini`    | Compact GPT-4.1 model                                                |
+| `Engine::GPT_4_1_NANO`    | `gpt-4.1-nano`    | Smallest GPT-4.1 model, fastest and cheapest                         |
+| `Engine::GPT_4O`          | `gpt-4o`          | GPT-4o with vision support                                           |
+| `Engine::GPT_4O_MINI`     | `gpt-4o-mini`     | Compact GPT-4o, great default for most extractions                   |
+| `Engine::GPT_4_TURBO`     | `gpt-4-turbo`     | GPT-4 Turbo                                                          |
+| `Engine::O3`              | `o3`              | O-series reasoning model (temperature/max_tokens handled automatically) |
+| `Engine::O3_MINI`         | `o3-mini`         | Compact reasoning model                                              |
+| `Engine::O3_PRO`          | `o3-pro`          | Most capable reasoning model                                         |
+| `Engine::O4_MINI`         | `o4-mini`         | Latest compact reasoning model                                       |
 
 **`$maxTokens` (int)**
 

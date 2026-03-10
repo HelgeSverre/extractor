@@ -71,17 +71,27 @@ class Engine
 
         $payload = [
             'model' => $model,
-            'max_tokens' => $maxTokens,
-            'temperature' => $temperature,
             'messages' => $messages,
             'response_format' => ['type' => 'json_object'],
         ];
+
+        if ($this->isReasoningModel($model)) {
+            $payload['max_completion_tokens'] = $maxTokens;
+        } else {
+            $payload['max_tokens'] = $maxTokens;
+            $payload['temperature'] = $temperature;
+        }
 
         $response = OpenAI::chat()->create($payload);
 
         $text = $this->extractResponseText($response);
 
         return $extractor->process($text);
+    }
+
+    protected function isReasoningModel(string $model): bool
+    {
+        return (bool) preg_match('/^o\d/', $model);
     }
 
     protected function buildMessages(Extractor $extractor, TextContent|string $input, string $prompt): array
@@ -114,6 +124,7 @@ class Engine
                                     'Invalid input type for vision model. Expected ImageContent with URL or base64-encodable content, got: ImageContent('.$input->type().')'
                                 )
                             },
+                            'detail' => $input->detail(),
                         ],
                     ],
                 ],

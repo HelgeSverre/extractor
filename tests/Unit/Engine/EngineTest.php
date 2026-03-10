@@ -89,6 +89,28 @@ describe('Engine', function () {
         });
     });
 
+    describe('isReasoningModel', function () {
+        it('returns true for o-series models', function () {
+            $engine = new Engine;
+            $method = new ReflectionMethod($engine, 'isReasoningModel');
+
+            expect($method->invoke($engine, 'o3'))->toBeTrue();
+            expect($method->invoke($engine, 'o3-mini'))->toBeTrue();
+            expect($method->invoke($engine, 'o3-pro'))->toBeTrue();
+            expect($method->invoke($engine, 'o4-mini'))->toBeTrue();
+        });
+
+        it('returns false for non-reasoning models', function () {
+            $engine = new Engine;
+            $method = new ReflectionMethod($engine, 'isReasoningModel');
+
+            expect($method->invoke($engine, 'gpt-4o'))->toBeFalse();
+            expect($method->invoke($engine, 'gpt-4o-mini'))->toBeFalse();
+            expect($method->invoke($engine, 'gpt-4.1'))->toBeFalse();
+            expect($method->invoke($engine, 'gpt-5'))->toBeFalse();
+        });
+    });
+
     describe('buildMessages', function () {
         it('builds system and user messages for text input', function () {
             $engine = new Engine;

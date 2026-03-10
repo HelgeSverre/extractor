@@ -12,13 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Configurable default model via `config('extractor.model')` / `EXTRACTOR_MODEL` env var (defaults to `gpt-4o-mini`)
-- System prompt support — all extractions now include a system message for better JSON output quality
+- System prompt support — extractions can include a system message for better JSON output quality
     - Configure globally via `config('extractor.system_prompt')` / `EXTRACTOR_SYSTEM_PROMPT` env var
     - Override per-extractor via `systemPrompt()` method
+    - Disabled by default (set `EXTRACTOR_SYSTEM_PROMPT` to enable)
 - New model constants for current OpenAI models:
     - GPT-5 family: `GPT_5_2`, `GPT_5_1`, `GPT_5`, `GPT_5_MINI`
     - GPT-4.1 family: `GPT_4_1`, `GPT_4_1_MINI`, `GPT_4_1_NANO`
-    - O-series: `O3`, `O3_MINI`, `O3_PRO`, `O4_MINI`
+    - O-series: `O3`, `O3_MINI`, `O3_PRO`, `O4_MINI` (with automatic parameter handling for reasoning models)
     - Renamed: `GPT_4O`, `GPT_4O_MINI` (cleaner naming)
 - JSON `response_format` now sent with all requests for more reliable structured output
 - Added `UPGRADING.md` migration guide for breaking changes

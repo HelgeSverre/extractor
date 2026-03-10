@@ -14,27 +14,35 @@ class ImageContent extends TextContent
 
     const TYPE_RAW = 'raw';
 
+    const VALID_DETAIL_LEVELS = ['low', 'high', 'original', 'auto'];
+
     public function __construct(
         protected string $content,
         protected string $type,
-        protected ?string $mime = null
+        protected ?string $mime = null,
+        protected string $detail = 'auto',
     ) {
         parent::__construct($this->content);
     }
 
-    public static function url(string $url): self
+    public static function url(string $url, string $detail = 'auto'): self
     {
-        return new self($url, self::TYPE_URL);
+        return new self($url, self::TYPE_URL, detail: $detail);
     }
 
-    public static function file(string $path, ?string $mime = null): self
+    public static function file(string $path, ?string $mime = null, string $detail = 'auto'): self
     {
-        return new self($path, self::TYPE_FILE, $mime);
+        return new self($path, self::TYPE_FILE, $mime, $detail);
     }
 
-    public static function raw(string $rawImageContents, ?string $mime = null): self
+    public static function raw(string $rawImageContents, ?string $mime = null, string $detail = 'auto'): self
     {
-        return new self($rawImageContents, self::TYPE_RAW, $mime);
+        return new self($rawImageContents, self::TYPE_RAW, $mime, $detail);
+    }
+
+    public function detail(): string
+    {
+        return $this->detail;
     }
 
     public function isUrl(): bool
