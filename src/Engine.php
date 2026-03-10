@@ -74,39 +74,11 @@ class Engine
                 'prompt' => $prompt,
             ]),
 
-            $this->isHybridModel($model) => $this->handleHybridModel($input, $prompt, $maxTokens, $temperature, $model),
+            // Vision: route based on input type, not model name.
+            // Any model that supports vision will work when ImageContent is passed.
+            $input instanceof ImageContent => $this->handleVisionRequest($input, $prompt, $maxTokens, $temperature, $model),
 
-            // New json mode models.
-            $this->isVisionModel($model) => OpenAI::chat()->create([
-                'model' => $model,
-                'max_tokens' => $maxTokens,
-                'temperature' => $temperature,
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => [
-                            [
-                                'type' => 'text',
-                                'text' => $prompt,
-                            ],
-                            [
-                                'type' => 'image_url',
-                                'image_url' => [
-                                    'url' => match (true) {
-                                        $input instanceof ImageContent && $input->isUrl() => $input->content(),
-                                        $input instanceof ImageContent && $input->isBase64able() => $input->toBase64Url(),
-                                        default => throw new InvalidArgumentException(
-                                            'Invalid input type for vision model. Expected ImageContent with URL or base64-encodable content, got: '.
-                                            ($input instanceof ImageContent ? 'ImageContent('.$input->type().')' : gettype($input))
-                                        )
-                                    },
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ]),
-
+            // JSON mode compatible models
             $this->isJsonModeCompatibleModel($model) => OpenAI::chat()->create([
                 'model' => $model,
                 'max_tokens' => $maxTokens,
@@ -135,6 +107,49 @@ class Engine
         return $extractor->process($text);
     }
 
+    /**
+     * Handle a vision request by building an image_url payload
+     * with the detail level from ImageContent.
+     */
+    private function handleVisionRequest(ImageContent $input, string $prompt, int $maxTokens, float $temperature, string $model): ChatResponse
+    {
+        $imageUrl = [
+            'url' => match (true) {
+                $input->isUrl() => $input->content(),
+                $input->isBase64able() => $input->toBase64Url(),
+                default => throw new InvalidArgumentException(
+                    'Invalid input type for vision model. Expected ImageContent with URL or base64-encodable content, got: ImageContent('.$input->type().')'
+                ),
+            },
+            'detail' => $input->detail(),
+        ];
+
+        return OpenAI::chat()->create([
+            'model' => $model,
+            'max_tokens' => $maxTokens,
+            'temperature' => $temperature,
+            'messages' => [
+                [
+                    'role' => 'user',
+                    'content' => [
+                        [
+                            'type' => 'text',
+                            'text' => $prompt,
+                        ],
+                        [
+                            'type' => 'image_url',
+                            'image_url' => $imageUrl,
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * @deprecated Vision routing is now based on input type (ImageContent), not model name.
+     *             This method is kept for backward compatibility but is no longer used internally.
+     */
     public function isVisionModel(string $model): bool
     {
         return in_array($model, [
@@ -162,51 +177,12 @@ class Engine
         ]);
     }
 
+    /**
+     * @deprecated No longer needed — vision vs text routing is based on input type.
+     */
     public function isHybridModel(string $model): bool
     {
         return $model === self::GPT_4o;
-    }
-
-    private function handleHybridModel($input, $prompt, $maxTokens, $temperature, $model): mixed
-    {
-        if ($input instanceof ImageContent) {
-            return OpenAI::chat()->create([
-                'model' => $model,
-                'max_tokens' => $maxTokens,
-                'temperature' => $temperature,
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => [
-                            [
-                                'type' => 'text',
-                                'text' => $prompt,
-                            ],
-                            [
-                                'type' => 'image_url',
-                                'image_url' => [
-                                    'url' => $input->isUrl()
-                                        ? $input->content()
-                                        : $input->toBase64Url(),
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ]);
-        } elseif (is_string($input) || $input instanceof TextContent) {
-            return OpenAI::chat()->create([
-                'model' => $model,
-                'max_tokens' => $maxTokens,
-                'temperature' => $temperature,
-                'messages' => [[
-                    'role' => 'user',
-                    'content' => $prompt,
-                ]],
-            ]);
-        } else {
-            throw new InvalidArgumentException('Unsupported input type for hybrid model');
-        }
     }
 
     public function isOhOne(string $model): bool
