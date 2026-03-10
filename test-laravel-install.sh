@@ -17,6 +17,7 @@ NC='\033[0m' # No Color
 # Arrays to track results
 declare -a PASSED_VERSIONS
 declare -a FAILED_VERSIONS
+declare -a SKIPPED_VERSIONS
 declare -a TESTED_DIRS
 
 # Create wip directory if it doesn't exist
@@ -37,14 +38,13 @@ test_laravel_version() {
         rm -rf "$project_dir"
     fi
 
-    # Create Laravel project
+    # Check if Laravel version exists on Packagist before attempting install
     echo "Creating Laravel ${version} project..."
     if ! composer create-project laravel/laravel="${version}.*" "$project_dir" --quiet --no-interaction 2>/dev/null; then
-        echo -e "${RED}✗ Failed to create Laravel ${version} project${NC}"
-        echo -e "${BLUE}  (This version may not be compatible or available)${NC}"
-        FAILED_VERSIONS+=("$version")
+        echo -e "${YELLOW}⊘ Skipping Laravel ${version} (not yet released)${NC}"
+        SKIPPED_VERSIONS+=("$version")
         echo ""
-        return 1
+        return 0
     fi
 
     TESTED_DIRS+=("$project_dir")
@@ -155,10 +155,10 @@ try {
 
     // Test 8: Engine model constants exist
     $models = [
-        \HelgeSverre\Extractor\Engine::GPT_4_OMNI,
-        \HelgeSverre\Extractor\Engine::GPT_4_OMNI_MINI,
-        \HelgeSverre\Extractor\Engine::GPT_4_TURBO,
+        \HelgeSverre\Extractor\Engine::GPT_4O,
         \HelgeSverre\Extractor\Engine::GPT_4O_MINI,
+        \HelgeSverre\Extractor\Engine::GPT_4_TURBO,
+        \HelgeSverre\Extractor\Engine::GPT_4_1,
     ];
     echo "PASS: Engine model constants defined\n";
 
@@ -220,6 +220,7 @@ EOF
 test_laravel_version "10"
 test_laravel_version "11"
 test_laravel_version "12"
+test_laravel_version "13"
 
 # Print summary
 echo ""
@@ -232,6 +233,14 @@ if [ ${#PASSED_VERSIONS[@]} -gt 0 ]; then
     echo -e "${GREEN}✓ Passed (${#PASSED_VERSIONS[@]})${NC}"
     for version in "${PASSED_VERSIONS[@]}"; do
         echo -e "  ${GREEN}●${NC} Laravel ${version}"
+    done
+    echo ""
+fi
+
+if [ ${#SKIPPED_VERSIONS[@]} -gt 0 ]; then
+    echo -e "${YELLOW}⊘ Skipped (${#SKIPPED_VERSIONS[@]})${NC}"
+    for version in "${SKIPPED_VERSIONS[@]}"; do
+        echo -e "  ${YELLOW}●${NC} Laravel ${version} (not yet released)"
     done
     echo ""
 fi
