@@ -15,8 +15,7 @@ Laravel application.
 - Includes a flexible Field Extractor that can extract any arbitrary data without writing custom logic.
 - Can return a regular array or a [Spatie/data](https://spatie.be/docs/laravel-data/v3/introduction) object.
 - Integrates with [Textract](https://aws.amazon.com/textract/) for OCR functionality.
-- Uses [JSON Mode](https://platform.openai.com/docs/guides/text-generation/json-mode) from the latest GPT-3.5 and GPT-4
-  models.
+- Uses [JSON Mode](https://platform.openai.com/docs/guides/text-generation/json-mode) for reliable structured output.
 
 ## Example
 
@@ -28,6 +27,7 @@ Laravel application.
 ```php
 <?php
 
+use HelgeSverre\Extractor\Engine;
 use HelgeSverre\Extractor\Facades\Extractor;
 use HelgeSverre\Extractor\Facades\Text;
 use Illuminate\Support\Facades\Storage;
@@ -48,7 +48,7 @@ $menu = Extractor::fields($textFromImage,
             'price' => 'price of the dish as a number',
         ],
     ],
-    model: "gpt-3.5-turbo-1106",
+    model: Engine::GPT_4O_MINI,
     maxTokens: 4000,
 );
 ```
@@ -254,6 +254,7 @@ After preparing your `ImageContent` object, you can pass it to the `Extractor::f
 using OpenAI's Vision API. For example:
 
 ```php
+use HelgeSverre\Extractor\Engine;
 use HelgeSverre\Extractor\Facades\Extractor;
 use HelgeSverre\Extractor\Text\ImageContent;
 
@@ -266,7 +267,7 @@ $data = Extractor::fields(
         'price',
         'description',
     ],
-    model: Engine::GPT_4_OMNI,
+    model: Engine::GPT_4O,
 );
 ```
 
@@ -524,20 +525,28 @@ Available Models:
 
 | Model Identifier          | Model             | Note                                                                  |
 | ------------------------- | ----------------- | --------------------------------------------------------------------- |
-| `Engine::GPT_5_2`         | `gpt-5.2`         | Latest GPT-5 model                                                    |
+| `Engine::GPT_5_4`         | `gpt-5.4`         | Latest GPT-5 flagship model                                          |
+| `Engine::GPT_5_4_PRO`     | `gpt-5.4-pro`     | Most capable GPT-5 model (Responses API only)                        |
+| `Engine::GPT_5_3`         | `gpt-5.3`         | GPT-5.3 model                                                        |
+| `Engine::GPT_5_2`         | `gpt-5.2`         | GPT-5.2 model                                                        |
+| `Engine::GPT_5_2_PRO`     | `gpt-5.2-pro`     | GPT-5.2 pro reasoning variant                                        |
 | `Engine::GPT_5_1`         | `gpt-5.1`         | GPT-5.1 model                                                        |
 | `Engine::GPT_5`           | `gpt-5`           | GPT-5 base model                                                     |
+| `Engine::GPT_5_PRO`       | `gpt-5-pro`       | GPT-5 pro reasoning variant                                          |
 | `Engine::GPT_5_MINI`      | `gpt-5-mini`      | Compact GPT-5 model, good balance of speed and quality                |
+| `Engine::GPT_5_NANO`      | `gpt-5-nano`      | Smallest GPT-5 model, fastest and cheapest                            |
 | `Engine::GPT_4_1`         | `gpt-4.1`         | GPT-4.1 model with strong instruction following                      |
 | `Engine::GPT_4_1_MINI`    | `gpt-4.1-mini`    | Compact GPT-4.1 model                                                |
 | `Engine::GPT_4_1_NANO`    | `gpt-4.1-nano`    | Smallest GPT-4.1 model, fastest and cheapest                         |
 | `Engine::GPT_4O`          | `gpt-4o`          | GPT-4o with vision support                                           |
 | `Engine::GPT_4O_MINI`     | `gpt-4o-mini`     | Compact GPT-4o, great default for most extractions                   |
 | `Engine::GPT_4_TURBO`     | `gpt-4-turbo`     | GPT-4 Turbo                                                          |
-| `Engine::O3`              | `o3`              | O-series reasoning model (temperature/max_tokens handled automatically) |
-| `Engine::O3_MINI`         | `o3-mini`         | Compact reasoning model                                              |
-| `Engine::O3_PRO`          | `o3-pro`          | Most capable reasoning model                                         |
 | `Engine::O4_MINI`         | `o4-mini`         | Latest compact reasoning model                                       |
+| `Engine::O3`              | `o3`              | O3 reasoning model                                                   |
+| `Engine::O3_MINI`         | `o3-mini`         | Compact O3 reasoning model                                           |
+| `Engine::O3_PRO`          | `o3-pro`          | O3 pro reasoning model                                               |
+| `Engine::O1`              | `o1`              | O1 reasoning model                                                   |
+| `Engine::O1_PRO`          | `o1-pro`          | O1 pro reasoning model                                               |
 
 **`$maxTokens` (int)**
 
@@ -545,12 +554,16 @@ The maximum number of tokens that the model will process.
 The default value is `2000`, and adjusting this value may be necessary for very long text. A value of 2000 is usually
 sufficient.
 
+> **Note:** For O-series reasoning models and GPT-5 family models, `max_completion_tokens` is used automatically instead of `max_tokens`.
+
 **`$temperature` (float)**
 
 Controls the randomness/creativity of the model's output.
 
 A higher value (e.g., 0.8) makes the output more random, which is usually not desired in this context. A recommended
 value is 0.1 or 0.2; anything over 0.5 tends to be less useful. The default is `0.1`.
+
+> **Note:** O-series reasoning models and GPT-5 family models do not support the `temperature` parameter — it is automatically omitted for these models.
 
 ## Development
 

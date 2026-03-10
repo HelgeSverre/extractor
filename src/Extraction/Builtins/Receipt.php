@@ -31,7 +31,7 @@ class Receipt extends Extractor
         ];
     }
 
-    public function throwsOnValidationFailure()
+    public function throwsOnValidationFailure(): bool
     {
         return true;
     }

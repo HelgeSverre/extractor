@@ -26,6 +26,7 @@ mkdir -p wip
 # Function to test installation
 test_laravel_version() {
     local version=$1
+    local stability="${2:-stable}"
     local project_dir="wip/laravel-${version}"
     local test_failed=0
 
@@ -38,10 +39,22 @@ test_laravel_version() {
         rm -rf "$project_dir"
     fi
 
-    # Check if Laravel version exists on Packagist before attempting install
+    # Create Laravel project — try stable first, fall back to dev stability
     echo "Creating Laravel ${version} project..."
-    if ! composer create-project laravel/laravel="${version}.*" "$project_dir" --quiet --no-interaction 2>/dev/null; then
-        echo -e "${YELLOW}⊘ Skipping Laravel ${version} (not yet released)${NC}"
+    local created=0
+    if [ "$stability" = "dev" ]; then
+        echo -e "${BLUE}Using dev stability for Laravel ${version}${NC}"
+        if composer create-project laravel/laravel="${version}.*" "$project_dir" --stability=dev --quiet --no-interaction 2>/dev/null; then
+            created=1
+        fi
+    else
+        if composer create-project laravel/laravel="${version}.*" "$project_dir" --quiet --no-interaction 2>/dev/null; then
+            created=1
+        fi
+    fi
+
+    if [ $created -eq 0 ]; then
+        echo -e "${YELLOW}⊘ Skipping Laravel ${version} (not available)${NC}"
         SKIPPED_VERSIONS+=("$version")
         echo ""
         return 0
@@ -53,8 +66,20 @@ test_laravel_version() {
     # Install the package from local path
     echo "Installing extractor package..."
     composer config repositories.local '{"type": "path", "url": "../../"}' --quiet
-    if ! composer require helgesverre/extractor:@dev --quiet --no-interaction 2>/dev/null; then
+    local install_output
+    install_output=$(composer require helgesverre/extractor:@dev --no-interaction 2>&1)
+    if [ $? -ne 0 ]; then
         echo -e "${RED}✗ Failed to install package${NC}"
+        # Check if failure is due to a third-party dependency not supporting this Laravel version
+        if echo "$install_output" | grep -q "it conflicts with your root composer.json"; then
+            echo -e "${YELLOW}  → A dependency does not yet support Laravel ${version}${NC}"
+            echo "$install_output" | grep "requires laravel/framework" | head -3 | sed 's/^/  /'
+            cd ../..
+            SKIPPED_VERSIONS+=("$version (dependency conflict)")
+            echo ""
+            return 0
+        fi
+        echo "$install_output" | tail -5 | sed 's/^/  /'
         cd ../..
         FAILED_VERSIONS+=("$version")
         test_failed=1
@@ -220,7 +245,7 @@ EOF
 test_laravel_version "10"
 test_laravel_version "11"
 test_laravel_version "12"
-test_laravel_version "13"
+test_laravel_version "13" "dev"
 
 # Print summary
 echo ""

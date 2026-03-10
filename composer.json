@@ -24,7 +24,7 @@
         "illuminate/contracts": "^10.0|^11.0|^12.0|^13.0",
         "jstewmc/rtf": "^0.5.2",
         "league/flysystem-aws-s3-v3": "^3.22.0",
-        "openai-php/laravel": "^v0.10.2|^0.11",
+        "openai-php/laravel": ">=0.10.2 <1.0",
         "smalot/pdfparser": "^2.10",
         "spatie/laravel-data": "^3|^4",
         "spatie/laravel-package-tools": "^1.16.2",
@@ -56,8 +56,7 @@
     "scripts": {
         "post-autoload-dump": [
             "@clear",
-            "@prepare",
-            "@composer run prepare"
+            "@prepare"
         ],
         "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
         "prepare": "@php vendor/bin/testbench package:discover --ansi",

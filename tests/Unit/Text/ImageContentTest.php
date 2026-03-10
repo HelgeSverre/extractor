@@ -154,8 +154,8 @@ describe('ImageContent', function () {
         });
 
         it('accepts custom detail level via raw()', function () {
-            $image = ImageContent::raw('bytes', detail: 'original');
-            expect($image->detail())->toBe('original');
+            $image = ImageContent::raw('bytes', detail: 'high');
+            expect($image->detail())->toBe('high');
         });
     });
 

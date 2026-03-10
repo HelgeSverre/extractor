@@ -14,7 +14,7 @@ class ImageContent extends TextContent
 
     const TYPE_RAW = 'raw';
 
-    const VALID_DETAIL_LEVELS = ['low', 'high', 'original', 'auto'];
+    const VALID_DETAIL_LEVELS = ['low', 'high', 'auto'];
 
     public function __construct(
         protected string $content,
@@ -73,8 +73,9 @@ class ImageContent extends TextContent
     public function imageData(): ?string
     {
         return match ($this->type) {
-            self::TYPE_FILE, self::TYPE_URL => file_get_contents($this->content),
+            self::TYPE_FILE => file_get_contents($this->content),
             self::TYPE_RAW => $this->content,
+            default => null,
         };
     }
 

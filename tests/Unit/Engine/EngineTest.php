@@ -9,8 +9,24 @@ use OpenAI\Responses\Meta\MetaInformation;
 describe('Engine', function () {
     describe('model constants', function () {
         describe('GPT-5 family', function () {
+            it('has correct GPT_5_4 value', function () {
+                expect(Engine::GPT_5_4)->toBe('gpt-5.4');
+            });
+
+            it('has correct GPT_5_4_PRO value', function () {
+                expect(Engine::GPT_5_4_PRO)->toBe('gpt-5.4-pro');
+            });
+
+            it('has correct GPT_5_3 value', function () {
+                expect(Engine::GPT_5_3)->toBe('gpt-5.3');
+            });
+
             it('has correct GPT_5_2 value', function () {
                 expect(Engine::GPT_5_2)->toBe('gpt-5.2');
+            });
+
+            it('has correct GPT_5_2_PRO value', function () {
+                expect(Engine::GPT_5_2_PRO)->toBe('gpt-5.2-pro');
             });
 
             it('has correct GPT_5_1 value', function () {
@@ -21,8 +37,16 @@ describe('Engine', function () {
                 expect(Engine::GPT_5)->toBe('gpt-5');
             });
 
+            it('has correct GPT_5_PRO value', function () {
+                expect(Engine::GPT_5_PRO)->toBe('gpt-5-pro');
+            });
+
             it('has correct GPT_5_MINI value', function () {
                 expect(Engine::GPT_5_MINI)->toBe('gpt-5-mini');
+            });
+
+            it('has correct GPT_5_NANO value', function () {
+                expect(Engine::GPT_5_NANO)->toBe('gpt-5-nano');
             });
         });
 
@@ -55,6 +79,10 @@ describe('Engine', function () {
         });
 
         describe('O-series reasoning models', function () {
+            it('has correct O4_MINI value', function () {
+                expect(Engine::O4_MINI)->toBe('o4-mini');
+            });
+
             it('has correct O3 value', function () {
                 expect(Engine::O3)->toBe('o3');
             });
@@ -67,8 +95,12 @@ describe('Engine', function () {
                 expect(Engine::O3_PRO)->toBe('o3-pro');
             });
 
-            it('has correct O4_MINI value', function () {
-                expect(Engine::O4_MINI)->toBe('o4-mini');
+            it('has correct O1 value', function () {
+                expect(Engine::O1)->toBe('o1');
+            });
+
+            it('has correct O1_PRO value', function () {
+                expect(Engine::O1_PRO)->toBe('o1-pro');
             });
         });
 
@@ -94,10 +126,28 @@ describe('Engine', function () {
             $engine = new Engine;
             $method = new ReflectionMethod($engine, 'isReasoningModel');
 
+            expect($method->invoke($engine, 'o4-mini'))->toBeTrue();
             expect($method->invoke($engine, 'o3'))->toBeTrue();
             expect($method->invoke($engine, 'o3-mini'))->toBeTrue();
             expect($method->invoke($engine, 'o3-pro'))->toBeTrue();
-            expect($method->invoke($engine, 'o4-mini'))->toBeTrue();
+            expect($method->invoke($engine, 'o1'))->toBeTrue();
+            expect($method->invoke($engine, 'o1-pro'))->toBeTrue();
+        });
+
+        it('returns true for gpt-5 family models', function () {
+            $engine = new Engine;
+            $method = new ReflectionMethod($engine, 'isReasoningModel');
+
+            expect($method->invoke($engine, 'gpt-5'))->toBeTrue();
+            expect($method->invoke($engine, 'gpt-5-mini'))->toBeTrue();
+            expect($method->invoke($engine, 'gpt-5-nano'))->toBeTrue();
+            expect($method->invoke($engine, 'gpt-5-pro'))->toBeTrue();
+            expect($method->invoke($engine, 'gpt-5.1'))->toBeTrue();
+            expect($method->invoke($engine, 'gpt-5.2'))->toBeTrue();
+            expect($method->invoke($engine, 'gpt-5.2-pro'))->toBeTrue();
+            expect($method->invoke($engine, 'gpt-5.3'))->toBeTrue();
+            expect($method->invoke($engine, 'gpt-5.4'))->toBeTrue();
+            expect($method->invoke($engine, 'gpt-5.4-pro'))->toBeTrue();
         });
 
         it('returns false for non-reasoning models', function () {
@@ -107,7 +157,7 @@ describe('Engine', function () {
             expect($method->invoke($engine, 'gpt-4o'))->toBeFalse();
             expect($method->invoke($engine, 'gpt-4o-mini'))->toBeFalse();
             expect($method->invoke($engine, 'gpt-4.1'))->toBeFalse();
-            expect($method->invoke($engine, 'gpt-5'))->toBeFalse();
+            expect($method->invoke($engine, 'gpt-4-turbo'))->toBeFalse();
         });
     });
 
@@ -181,6 +231,21 @@ describe('Engine', function () {
             ]);
             expect($messages[1]['content'][1]['type'])->toBe('image_url');
             expect($messages[1]['content'][1]['image_url']['url'])->toBe('https://example.com/image.png');
+            expect($messages[1]['content'][1]['image_url']['detail'])->toBe('auto');
+        });
+
+        it('includes custom detail level in image URL payload', function () {
+            $engine = new Engine;
+            $extractor = Mockery::mock(Extractor::class);
+            $extractor->shouldReceive('systemPrompt')->andReturn(null);
+
+            $imageContent = ImageContent::url('https://example.com/image.png', detail: 'high');
+
+            $method = new ReflectionMethod($engine, 'buildMessages');
+            $messages = $method->invoke($engine, $extractor, $imageContent, 'Describe the image');
+
+            expect($messages[0]['role'])->toBe('user');
+            expect($messages[0]['content'][1]['image_url']['detail'])->toBe('high');
         });
     });
 

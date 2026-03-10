@@ -14,13 +14,25 @@ use OpenAI\Responses\Chat\CreateResponse as ChatResponse;
 class Engine
 {
     // GPT-5 family
+    const GPT_5_4 = 'gpt-5.4';
+
+    const GPT_5_4_PRO = 'gpt-5.4-pro';
+
+    const GPT_5_3 = 'gpt-5.3';
+
     const GPT_5_2 = 'gpt-5.2';
+
+    const GPT_5_2_PRO = 'gpt-5.2-pro';
 
     const GPT_5_1 = 'gpt-5.1';
 
     const GPT_5 = 'gpt-5';
 
+    const GPT_5_PRO = 'gpt-5-pro';
+
     const GPT_5_MINI = 'gpt-5-mini';
+
+    const GPT_5_NANO = 'gpt-5-nano';
 
     // GPT-4.1 family
     const GPT_4_1 = 'gpt-4.1';
@@ -37,13 +49,17 @@ class Engine
     const GPT_4_TURBO = 'gpt-4-turbo';
 
     // O-series (reasoning models)
+    const O4_MINI = 'o4-mini';
+
     const O3 = 'o3';
 
     const O3_MINI = 'o3-mini';
 
     const O3_PRO = 'o3-pro';
 
-    const O4_MINI = 'o4-mini';
+    const O1 = 'o1';
+
+    const O1_PRO = 'o1-pro';
 
     // Deprecated aliases (kept for one release cycle, will be removed in v0.6.0)
 
@@ -89,9 +105,15 @@ class Engine
         return $extractor->process($text);
     }
 
+    /**
+     * Models that require max_completion_tokens instead of max_tokens
+     * and do not support temperature parameter.
+     *
+     * This includes O-series reasoning models and GPT-5 family models.
+     */
     protected function isReasoningModel(string $model): bool
     {
-        return (bool) preg_match('/^o\d/', $model);
+        return (bool) preg_match('/^(o\d|gpt-5)/', $model);
     }
 
     protected function buildMessages(Extractor $extractor, TextContent|string $input, string $prompt): array

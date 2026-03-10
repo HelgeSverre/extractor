@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.5.0] - 2026-02-28
+## [0.5.0] - 2026-03-10
 
 ### Added
 
@@ -17,11 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Override per-extractor via `systemPrompt()` method
     - Disabled by default (set `EXTRACTOR_SYSTEM_PROMPT` to enable)
 - New model constants for current OpenAI models:
-    - GPT-5 family: `GPT_5_2`, `GPT_5_1`, `GPT_5`, `GPT_5_MINI`
+    - GPT-5 family: `GPT_5_4`, `GPT_5_4_PRO`, `GPT_5_3`, `GPT_5_2`, `GPT_5_2_PRO`, `GPT_5_1`, `GPT_5`, `GPT_5_PRO`, `GPT_5_MINI`, `GPT_5_NANO` (with automatic parameter handling — uses `max_completion_tokens`, omits `temperature`)
     - GPT-4.1 family: `GPT_4_1`, `GPT_4_1_MINI`, `GPT_4_1_NANO`
-    - O-series: `O3`, `O3_MINI`, `O3_PRO`, `O4_MINI` (with automatic parameter handling for reasoning models)
+    - O-series: `O4_MINI`, `O3`, `O3_MINI`, `O3_PRO`, `O1`, `O1_PRO` (with automatic parameter handling for reasoning models)
     - Renamed: `GPT_4O`, `GPT_4O_MINI` (cleaner naming)
-- `ImageContent` `detail` parameter for OpenAI vision API (`low`, `high`, `original`, `auto`)
+- `ImageContent` `detail` parameter for OpenAI vision API (`low`, `high`, `auto`)
 - Laravel 13 compatibility
 - JSON `response_format` now sent with all requests for more reliable structured output
 - Added `UPGRADING.md` migration guide for breaking changes
@@ -30,10 +30,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **BREAKING**: Default model changed from `gpt-3.5-turbo-1106` to `gpt-4o-mini`
-- **BREAKING**: `$model` parameter in `ExtractorManager` methods changed from `string` to `?string` (nullable, resolved from config)
+- **BREAKING**: `$model`, `$maxTokens`, and `$temperature` parameters in `ExtractorManager` methods are now nullable with config/extractor fallback chains
 - **BREAKING**: Removed legacy OpenAI Completions API support — all requests now use Chat Completions API
 - **BREAKING**: `Engine::extractResponseText()` now accepts only `ChatResponse` and returns `string`
 - Engine simplified to single chat-only codepath with input-driven vision support
+- Widened `openai-php/laravel` constraint from `^v0.10.2|^0.11` to `>=0.10.2 <1.0` for broader compatibility
 - Feature tests updated to use current model constants
 
 ### Removed
@@ -41,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BREAKING**: Removed deprecated/shutdown model constants: `TEXT_DAVINCI_002`, `TEXT_DAVINCI_003`, `GPT_3_TURBO_INSTRUCT`, `GPT_3_TURBO`, `GPT_3_TURBO_16K`, `GPT_3_TURBO_1106`, `GPT_4`, `GPT4_32K`, `GPT_4_1106_PREVIEW`, `GPT_4_VISION`, `GPT_O1_MINI`, `GPT_O1_PREVIEW`
 - Removed `isCompletionModel()`, `isJsonModeCompatibleModel()`, `isHybridModel()`, `isOhOne()` methods from Engine
 - Removed `CompletionResponse` import and handling from Engine
+- Removed unused `Contracts\Engine` interface
 
 ### Deprecated
 

@@ -120,19 +120,34 @@ These constants have been removed entirely. Replace them with model name strings
 ### New Constants
 
 ```php
+// GPT-5 family (uses max_completion_tokens, no temperature)
+Engine::GPT_5_4       // 'gpt-5.4'
+Engine::GPT_5_4_PRO   // 'gpt-5.4-pro'
+Engine::GPT_5_3       // 'gpt-5.3'
 Engine::GPT_5_2       // 'gpt-5.2'
+Engine::GPT_5_2_PRO   // 'gpt-5.2-pro'
 Engine::GPT_5_1       // 'gpt-5.1'
 Engine::GPT_5         // 'gpt-5'
+Engine::GPT_5_PRO     // 'gpt-5-pro'
 Engine::GPT_5_MINI    // 'gpt-5-mini'
+Engine::GPT_5_NANO    // 'gpt-5-nano'
+
+// GPT-4.1 family
 Engine::GPT_4_1       // 'gpt-4.1'
 Engine::GPT_4_1_MINI  // 'gpt-4.1-mini'
 Engine::GPT_4_1_NANO  // 'gpt-4.1-nano'
+
+// GPT-4o family
 Engine::GPT_4O        // 'gpt-4o'
 Engine::GPT_4O_MINI   // 'gpt-4o-mini'
+
+// O-series (uses max_completion_tokens, no temperature)
+Engine::O4_MINI       // 'o4-mini'
 Engine::O3            // 'o3'
 Engine::O3_MINI       // 'o3-mini'
 Engine::O3_PRO        // 'o3-pro'
-Engine::O4_MINI       // 'o4-mini'
+Engine::O1            // 'o1'
+Engine::O1_PRO        // 'o1-pro'
 ```
 
 ---
@@ -205,4 +220,4 @@ All requests now include `response_format: { "type": "json_object" }`. Previousl
 - [ ] Replace removed `Engine::*` constants with new equivalents
 - [ ] Rename `Engine::GPT_4_OMNI` → `Engine::GPT_4O` and `Engine::GPT_4_OMNI_MINI` → `Engine::GPT_4O_MINI`
 - [ ] Verify your model supports `response_format` (all current OpenAI models do)
-- [ ] Review the new system prompt behavior — disable with `EXTRACTOR_SYSTEM_PROMPT=""` if needed
+- [ ] Review the new system prompt behavior — it is disabled by default, set `EXTRACTOR_SYSTEM_PROMPT` to enable

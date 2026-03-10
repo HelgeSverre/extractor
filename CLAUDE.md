@@ -170,7 +170,7 @@ TEXTRACT_TIMEOUT=60
 
 ## Code Style
 
-- PHP 8.2+ with `declare(strict_types=1)` in all files
+- PHP 8.3+ with `declare(strict_types=1)` in all files
 - Laravel Pint for code formatting (PSR-12 based)
 - Strict type comparisons (`===` not `==`)
 - No debugging functions in source code (enforced by ArchTest)
@@ -230,7 +230,7 @@ When adding a new built-in extractor:
 1. Create class in `src/Extraction/Builtins/`
 2. Extend `Extractor` base class
 3. Add Blade prompt template in `resources/prompts/`
-4. Register in `ExtractorManager::$builtins` array
+4. Register via `ExtractorManager::extend()` or resolve by class name
 5. Add tests in `tests/Feature/` or `tests/Unit/Extraction/`
 6. Document in README.md
 
