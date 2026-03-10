@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - GPT-4.1 family: `GPT_4_1`, `GPT_4_1_MINI`, `GPT_4_1_NANO`
     - O-series: `O3`, `O3_MINI`, `O3_PRO`, `O4_MINI` (with automatic parameter handling for reasoning models)
     - Renamed: `GPT_4O`, `GPT_4O_MINI` (cleaner naming)
+- `ImageContent` `detail` parameter for OpenAI vision API (`low`, `high`, `original`, `auto`)
+- Laravel 13 compatibility
 - JSON `response_format` now sent with all requests for more reliable structured output
 - Added `UPGRADING.md` migration guide for breaking changes
 - Added comprehensive tests for HasValidation, HasDto, Contacts extractor, system prompts
