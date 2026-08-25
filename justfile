@@ -63,6 +63,11 @@ test-filter filter:
 test-unit:
     composer test
 
+# Run only unit tests affected by local changes
+[group('test')]
+test-tia:
+    composer test:tia
+
 # Run feature tests only (requires OPENAI_API_KEY)
 [group('test')]
 test-feature:
@@ -73,10 +78,10 @@ test-feature:
 test-integration:
     composer test:integration
 
-# Test Laravel integration across versions 10, 11, 12
+# Test Laravel integration across versions 10, 11, 12, 13 (optionally specify one)
 [group('test')]
-test-laravel:
-    ./test-laravel-install.sh
+test-laravel version="":
+    ./test-laravel-install.sh {{ quote(version) }}
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Code Quality

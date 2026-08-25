@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Custom OpenAI base URI clients no longer crash with a `TypeError` when no API key is set. `Factory::withApiKey()` is not nullable, so a keyless local provider (Ollama, LM Studio) previously failed to build a client.
+- Custom OpenAI base URI clients now forward `config('openai.project')`, matching the behaviour of the default `openai-php/laravel` client.
+
+### Removed
+
+- The `OpenAI-Beta: assistants=v2` header from the custom base URI client. The package only calls the Chat Completions API, so the header was inert; it is dropped ahead of the Assistants API removal on 2026-08-26.
+
 ## [0.5.0] - 2026-03-10
 
 ### Added

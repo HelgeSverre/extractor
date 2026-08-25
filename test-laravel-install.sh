@@ -3,7 +3,24 @@
 # Don't exit on errors - we want to test all versions
 # set -e
 
-echo "🧪 Testing extractor Laravel integration across versions"
+requested_version="${1:-}"
+
+if [ -n "$requested_version" ]; then
+    case "$requested_version" in
+        10|11|12|13) ;;
+        *)
+            echo "Unsupported Laravel version: $requested_version" >&2
+            echo "Supported versions: 10, 11, 12, 13" >&2
+            exit 2
+            ;;
+    esac
+fi
+
+if [ -n "$requested_version" ]; then
+    echo "🧪 Testing extractor integration with Laravel ${requested_version}"
+else
+    echo "🧪 Testing extractor Laravel integration across versions"
+fi
 echo "==========================================================================="
 echo ""
 
@@ -67,7 +84,7 @@ test_laravel_version() {
     echo "Installing extractor package..."
     composer config repositories.local '{"type": "path", "url": "../../"}' --quiet
     local install_output
-    install_output=$(composer require helgesverre/extractor:@dev --no-interaction 2>&1)
+    install_output=$(composer require helgesverre/extractor:@dev --with-all-dependencies --no-interaction 2>&1)
     if [ $? -ne 0 ]; then
         echo -e "${RED}✗ Failed to install package${NC}"
         # Check if failure is due to a third-party dependency not supporting this Laravel version
@@ -241,11 +258,19 @@ EOF
     return $test_failed
 }
 
-# Test each Laravel version
-test_laravel_version "10"
-test_laravel_version "11"
-test_laravel_version "12"
-test_laravel_version "13" "dev"
+# Test the requested Laravel version, or all supported versions by default
+if [ -n "$requested_version" ]; then
+    if [ "$requested_version" = "13" ]; then
+        test_laravel_version "$requested_version" "dev"
+    else
+        test_laravel_version "$requested_version"
+    fi
+else
+    test_laravel_version "10"
+    test_laravel_version "11"
+    test_laravel_version "12"
+    test_laravel_version "13" "dev"
+fi
 
 # Print summary
 echo ""
