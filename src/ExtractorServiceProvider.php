@@ -42,13 +42,17 @@ class ExtractorServiceProvider extends PackageServiceProvider
         // Override OpenAI client if custom base URI is configured
         if (config('extractor.openai_base_uri')) {
             $this->app->singleton(ClientContract::class, function (): OpenAIClient {
-                // Local providers (Ollama, LM Studio) need no API key, and
-                // Factory::withApiKey() is not nullable, so coerce to string.
                 $factory = OpenAI::factory()
-                    ->withApiKey((string) config('openai.api_key'))
                     ->withOrganization(config('openai.organization'))
                     ->withBaseUri(config('extractor.openai_base_uri'))
                     ->withHttpClient(new GuzzleClient(['timeout' => config('openai.request_timeout', 30)]));
+
+                // Local providers (Ollama, LM Studio) do not require an API key.
+                $apiKey = config('openai.api_key');
+
+                if (is_string($apiKey) && trim($apiKey) !== '') {
+                    $factory->withApiKey($apiKey);
+                }
 
                 // Mirror openai-php/laravel: only forward a project when configured.
                 $project = config('openai.project');

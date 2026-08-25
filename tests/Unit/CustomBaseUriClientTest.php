@@ -33,7 +33,7 @@ function transporterHeaders(OpenAIClient $client): array
     return array_change_key_case($headers->toArray());
 }
 
-it('builds a client for a keyless local provider without throwing', function () {
+it('builds a client for a keyless local provider without authorization', function () {
     $client = rebootWithBaseUri([
         'extractor.openai_base_uri' => 'http://localhost:11434/v1',
         'openai.api_key' => null,
@@ -41,7 +41,8 @@ it('builds a client for a keyless local provider without throwing', function () 
         'openai.project' => null,
     ]);
 
-    expect($client)->toBeInstanceOf(OpenAIClient::class);
+    expect($client)->toBeInstanceOf(OpenAIClient::class)
+        ->and(transporterHeaders($client))->not->toHaveKey('authorization');
 });
 
 it('does not send the removed Assistants API beta header', function () {

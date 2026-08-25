@@ -3,6 +3,7 @@
 
 # Build/Cache
 .phpunit.cache
+.phpunit-tia
 build
 coverage
 

@@ -32,11 +32,12 @@
         "brandembassy/file-type-detector": "^2.3.2"
     },
     "require-dev": {
+        "gosuperscript/phpunit-tia": "dev-main",
         "laravel/pint": "^1.0",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^7.8|^8.5",
-        "orchestra/testbench": "^8.8|^10.0|^11.0",
-        "pestphp/pest": "^2.0|^3.7|^4.4",
+        "orchestra/testbench": "^8.8|^9.0|^10.0|^11.0",
+        "pestphp/pest": "^2.36|^3.8|^4.7",
         "pestphp/pest-plugin-arch": "^2.0|^3.0|^4.0",
         "pestphp/pest-plugin-laravel": "^2.0|^3.1|^4.1"
     },
@@ -63,6 +64,7 @@
         "build": "@php vendor/bin/testbench workbench:build --ansi",
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest --testsuite=Unit",
+        "test:tia": "TIA_PHPUNIT=vendor/bin/pest vendor/bin/phpunit-tia --testsuite=Unit",
         "test:feature": "vendor/bin/pest --testsuite=Feature",
         "test:integration": "vendor/bin/pest --testsuite=Integration",
         "test:all": "vendor/bin/pest",
