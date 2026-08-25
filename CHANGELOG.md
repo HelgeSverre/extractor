@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-08-25
+
+### Changed
+
+- Expanded the development compatibility matrix to cover Laravel 10 through 13, including Orchestra Testbench 9.
+- Updated Pest constraints and added test-impact analysis support for faster local test runs.
+
 ### Fixed
 
 - Custom OpenAI base URI clients no longer crash with a `TypeError` when no API key is set. `Factory::withApiKey()` is not nullable, so a keyless local provider (Ollama, LM Studio) previously failed to build a client.
@@ -260,7 +267,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Spatie/data DTO integration
 - Built-in extractors: Fields, Contacts, Receipt
 
-[Unreleased]: https://github.com/HelgeSverre/extractor/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/HelgeSverre/extractor/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/HelgeSverre/extractor/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/HelgeSverre/extractor/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/HelgeSverre/extractor/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/HelgeSverre/extractor/compare/v0.2.2...v0.3.0
